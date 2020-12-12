@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-typedef struct lligada {
-    int nBloco;
-    int tamanho_Bloco;
-    int *freq[255];
+typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um ficheiro
+    int nBloco; //número do bloco
+    int tamanho_Bloco; //tamano do bloco
+    int *freq[255]; //frequência de cada símbolo
     struct lligada *prox;
 } *LInt;
 
@@ -35,7 +36,7 @@ int modulo_t(char *fileName){
             
             for(int i=0; i<=255; i++){ //caso particular do ;; em que valor da freq é igual ao anterior
                 fscanf(fp, "%d", &info_Blocos->freq[i]);
-                fseek(fp, 1, SEEK_CUR);
+                fseek(fp, 1, SEEK_CUR);//seek_cur falta definir/importar??
             }
             info_Blocos->prox = criar_lista(); 
         }
