@@ -59,3 +59,5 @@ int correct_file (char s1[], char s2[]){
 
     return ans;
 }
+
+criar_lista()
