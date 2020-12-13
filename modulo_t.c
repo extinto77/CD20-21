@@ -1,9 +1,17 @@
 #include <stdio.h>
+#include <stdlib.h>
 
+<<<<<<< HEAD
 typedef struct lligada {
     int nBloco;
     int tamanho_bloco;
     int *freq[255];
+=======
+typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um ficheiro
+    int nBloco; //número do bloco
+    int tamanho_Bloco; //tamano do bloco
+    int *freq[255]; //frequência de cada símbolo
+>>>>>>> 8ab196aa84e2eb38bf157dff619f127158b08ba6
     struct lligada *prox;
 } *LInt;
 
@@ -34,8 +42,13 @@ int modulo_t(char *fileName){
             fscanf(fp, "%d@", &info_blocos->tamanho_bloco);
             
             for(int i=0; i<=255; i++){ //caso particular do ;; em que valor da freq é igual ao anterior
+<<<<<<< HEAD
                 fscanf(fp, "%d", &info_blocos->freq[i]);
                 fseek(fp, 1, SEEK_CUR);
+=======
+                fscanf(fp, "%d", &info_Blocos->freq[i]);
+                fseek(fp, 1, SEEK_CUR);//seek_cur falta definir/importar??
+>>>>>>> 8ab196aa84e2eb38bf157dff619f127158b08ba6
             }
             info_blocos->prox = criar_lista(); 
         }
