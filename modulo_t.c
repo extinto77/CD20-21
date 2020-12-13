@@ -2,7 +2,7 @@
 
 typedef struct lligada {
     int nBloco;
-    int tamanho_Bloco;
+    int tamanho_bloco;
     int *freq[255];
     struct lligada *prox;
 } *LInt;
@@ -19,25 +19,25 @@ int modulo_t(char *fileName){
         }
 
         char file_type;
-        int num_Blocos;
+        int num_blocos;
 
-        fscanf(fp, "@%c@%d@", &file_type, &num_Blocos);
+        fscanf(fp, "@%c@%d@", &file_type, &num_blocos);
 
-        LInt info_Blocos = criar_lista(); //criar função 
-        LInt *inicio_info_Blocos = info_Blocos;
+        LInt info_blocos = criar_lista(); //criar função 
+        LInt *inicio_info_blocos = info_blocos;
 
 
         //while(fp) ver se é necessário, not sure
 
-        for(int nb = 1; nb<=num_Blocos; nb++){
-            info_Blocos->nBloco = nb;
-            fscanf(fp, "%d@", &info_Blocos->tamanho_Bloco);
+        for(int nb = 1; nb<=num_blocos; nb++){
+            info_blocos->nBloco = nb;
+            fscanf(fp, "%d@", &info_blocos->tamanho_bloco);
             
             for(int i=0; i<=255; i++){ //caso particular do ;; em que valor da freq é igual ao anterior
-                fscanf(fp, "%d", &info_Blocos->freq[i]);
+                fscanf(fp, "%d", &info_blocos->freq[i]);
                 fseek(fp, 1, SEEK_CUR);
             }
-            info_Blocos->prox = criar_lista(); 
+            info_blocos->prox = criar_lista(); 
         }
 
         fclose(fp);
