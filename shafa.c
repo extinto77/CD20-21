@@ -5,16 +5,14 @@
 
 
 int main(int argc, char *argv[]){
+    char line[1024];
 
-
-char line[1024];
-scanf ("%s", &line);
-if (strcmp (line, "shafa"))//é peta nao da assim pq \n
-{
-    /* code */
-}
-
-
+    scanf ("%s", &line);
+    
+    if (strcmp (line, "shafa"))//é peta nao da assim pq \n
+    {
+        /* code */
+    }
 }
 
 
