@@ -39,11 +39,6 @@ int modulo_t(char *fileName){
             info_blocos->nbloco = nb;
             fscanf(fp, "%d@", &info_blocos->tamanho_bloco);
             
-<<<<<<< HEAD
-            for(int i=0; i<=255; i++){ //caso particular do ;; em que valor da freq é igual ao anterior                              
-                fscanf(fp, "%d", &info_Blocos->freq[i]);
-                fseek(fp, 1, SEEK_CUR);
-=======
             for(int i=0; i<=255; i++){ //caso particular do ;; em que valor da freq é igual ao anterior
                 if(fscanf(fp, "%d", &info_blocos->freq[i]) == 1){
                     ant_freq == info_blocos->freq[i];
@@ -51,7 +46,6 @@ int modulo_t(char *fileName){
                 }else{
                     info_blocos->freq[i] == ant_freq;
                 }
->>>>>>> 5642bd82f54a1e488aa3dca5211c5fbf8c97bf3f
             }
             info_blocos->prox = criar_lista();
         }
