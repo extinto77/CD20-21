@@ -1,17 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-<<<<<<< HEAD
-typedef struct lligada {
-    int nBloco;
-    int tamanho_bloco;
-    int *freq[255];
-=======
+
 typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um ficheiro
-    int nBloco; //número do bloco
-    int tamanho_Bloco; //tamano do bloco
+    int nbloco; //número do bloco
+    int tamanho_bloco; //tamano do bloco
     int *freq[255]; //frequência de cada símbolo
->>>>>>> 8ab196aa84e2eb38bf157dff619f127158b08ba6
     struct lligada *prox;
 } *LInt;
 
@@ -28,36 +22,38 @@ int modulo_t(char *fileName){
 
         char file_type;
         int num_blocos;
+        int ant_freq;
 
         fscanf(fp, "@%c@%d@", &file_type, &num_blocos);
 
-        LInt info_blocos = criar_lista(); //criar função 
+        LInt info_blocos = criar_lista(); //criar função    
+        //acrescentar 0 (*10)
+        //acrescentar 1 (*10+1)
+
         LInt *inicio_info_blocos = info_blocos;
 
 
         //while(fp) ver se é necessário, not sure
 
         for(int nb = 1; nb<=num_blocos; nb++){
-            info_blocos->nBloco = nb;
+            info_blocos->nbloco = nb;
             fscanf(fp, "%d@", &info_blocos->tamanho_bloco);
             
             for(int i=0; i<=255; i++){ //caso particular do ;; em que valor da freq é igual ao anterior
-<<<<<<< HEAD
-                fscanf(fp, "%d", &info_blocos->freq[i]);
-                fseek(fp, 1, SEEK_CUR);
-=======
-                fscanf(fp, "%d", &info_Blocos->freq[i]);
-                fseek(fp, 1, SEEK_CUR);//seek_cur falta definir/importar??
->>>>>>> 8ab196aa84e2eb38bf157dff619f127158b08ba6
+                if(fscanf(fp, "%d", &info_blocos->freq[i]) == 1){
+                    ant_freq == info_blocos->freq[i];
+                    fseek(fp, 1, SEEK_CUR);
+                }else{
+                    info_blocos->freq[i] == ant_freq;
+                }
             }
-            info_blocos->prox = criar_lista(); 
+            info_blocos->prox = criar_lista();
         }
 
         fclose(fp);
     }else printf("Tipo de ficheiro incorreto!");
 
 }
-
 
 
 
