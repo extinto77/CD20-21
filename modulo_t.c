@@ -34,9 +34,9 @@ int modulo_t(char *fileName){
             info_Blocos->nBloco = nb;
             fscanf(fp, "%d@", &info_Blocos->tamanho_Bloco);
             
-            for(int i=0; i<=255; i++){ //caso particular do ;; em que valor da freq é igual ao anterior
+            for(int i=0; i<=255; i++){ //caso particular do ;; em que valor da freq é igual ao anterior                              
                 fscanf(fp, "%d", &info_Blocos->freq[i]);
-                fseek(fp, 1, SEEK_CUR);//seek_cur falta definir/importar??
+                fseek(fp, 1, SEEK_CUR);
             }
             info_Blocos->prox = criar_lista(); 
         }
@@ -62,3 +62,25 @@ int correct_file (char s1[], char s2[]){
 }
 
 criar_lista()
+
+
+
+int i==0;
+    while (i<=(separar_prob(v[]))) {
+        v[i]->adiciona_zero//fazer
+    }
+    while (v[i] && i>(separar_prob(v[]))) {
+        v[i]->adiciona_um//fazer
+    }
+
+
+int separar_prob(v[]) {//retorna o n indice que a probabilidade se aproxima mais de 50%
+int cima, baixo, first=0/*indice do primeiro elemento do array*/, last=/*indice do ultimo elemento do array*/; 
+cima==v[first];
+baixo==v[last];
+    for(){
+        if (baixo<cima) baixo+= v[last--];
+        else cima+= v[first++];
+    }
+    return first;
+}
