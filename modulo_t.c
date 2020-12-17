@@ -4,7 +4,7 @@
 
 typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um ficheiro
     int nbloco; //número do bloco
-    int tamanho_bloco; //tamano do bloco
+    int tamanho_bloco; //tamanho do bloco
     int *freq[255]; //frequência de cada símbolo
     struct lligada *prox;
 } *LInt;
@@ -82,11 +82,11 @@ int i==0;
     }
 
 
-int separar_prob(v[]) {//retorna o n indice que a probabilidade se aproxima mais de 50%
-int cima, baixo, first=0/*indice do primeiro elemento do array*/, last=/*indice do ultimo elemento do array*/; 
+int separar_prob(v[n]) {//retorna o n indice que a probabilidade se aproxima mais de 50%, sabendo que as freq estao oeganizadas decrescente
+int cima, baixo, first=0, last=n; 
 cima==v[first];
 baixo==v[last];
-    for(){
+    while(v[i] && first<last){
         if (baixo<cima) baixo+= v[last--];
         else cima+= v[first++];
     }
