@@ -1,7 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h> //vem daqui : clock(), CLOCKS_PER_SEC e clock_t
+
+ clock_t t; //variável para armazenar tempo
+
+ double t = clock(); //armazena tempo
+
+//inserir a função
+
+ t = clock() - t; // tempo final - tempo inicial
+ printf("Tempo de execucao do módulo (milissegundos): %lf", (t/(CLOCKS_PER_SEC/1000));
 
 
+ 
 typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um ficheiro
     int nbloco; //número do bloco
     int tamanho_bloco; //tamanho do bloco
@@ -43,9 +54,7 @@ int modulo_t(char *fileName){
                 if(fscanf(fp, "%d", &info_blocos->freq[i]) == 1){
                     ant_freq == info_blocos->freq[i];
                     fseek(fp, 1, SEEK_CUR);
-                }else{
-                    info_blocos->freq[i] == ant_freq;
-                }
+                } else info_blocos->freq[i] == ant_freq;
             }
             info_blocos->prox = criar_lista();
         }
@@ -73,13 +82,25 @@ criar_lista()
 
 
 
+
+
+//----------Diarreias Mentais Extinto----------
+
 int i==0;
     while (i<=(separar_prob(v[]))) {
-        v[i]->adiciona_zero//fazer
+        int val = v[i->codigo]; // v[i->codigo] == (v[i->codigo])*10;
+        val = val*10;
+        v[i->codigo]==val;
     }
     while (v[i] && i>(separar_prob(v[]))) {
-        v[i]->adiciona_um//fazer
+        int val = v[i->codigo];
+        val =val*10;
+        v[i->codigo]==val;
     }
+
+int add_zero {
+
+}
 
 
 int separar_prob(v[n]) {//retorna o n indice que a probabilidade se aproxima mais de 50%, sabendo que as freq estao oeganizadas decrescente
@@ -92,3 +113,35 @@ baixo==v[last];
     }
     return first;
 }
+
+
+
+typedef struct Ligacao{ //optar com um array com estas 3 informações do que array ("int *freq[255];") ou matriz
+    int simbolo;//ASCII
+    int codigo;
+    int freq;
+    struct Ligacao* proximo;
+}Ligacao;
+
+Dado *inicio = NULL, *fim = NULL;
+
+freqDecrescente (e) { //
+    Ligacao *e1 = e1;
+
+    while (e1){
+        Ligacao *e2 = e1->proximo;
+        while (e2){
+            if (e1->freq < e2->freq) { //se menor a ordem desses dois
+                
+                //trocar apontadores de e1 e e2
+
+                /*int temporario = e1->freq; 
+                e1->freq = e2->freq;
+                e2->freq = temporario;*/
+            }
+            //e2 = e2->proximo;
+        }
+        //e1 = e1->proximo;
+    }
+}
+
