@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h> //vem daqui : clock(), CLOCKS_PER_SEC e clock_t
 
+ clock_t t; //variável para armazenar tempo
 
 typedef struct info_symbl{
     int symbl;
