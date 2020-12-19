@@ -12,6 +12,11 @@ int main(int argc, char *argv[]){
     
         /* code */
     }
+
+    argv[0];// primeira string até ao espaço que se escreve no terminal
+
+
+
 }
 
 

@@ -65,7 +65,6 @@ int modulo_t(char *fileName){
     }else{
         printf("Tipo de ficheiro incorreto!");
     } 
-
 }
 
 
@@ -86,7 +85,46 @@ void freqDecres(InfSymbl arr[], int n) {
         }
     }
 }
+/*
+int somaFreq (InfSymbl arr[], int n) {
+    int count = 0;
+    for (int i=0; i<n && arr[i].freq!=0 ; i++) { 
+        count += arr[i].freq;
+    }
+    return count;
+}*/
 
+int split (InfSymbl arr[], int inicio, int fim /*, int count*/ ) {
+    int p1=0, p2=0;
+
+    p1 = arr[inicio].freq;
+    p2 = arr[fim].freq;
+
+    while(inicio < (fim-1) ) {
+        if (p2<p1) p2 += arr[fim--].freq;
+        else p1 += arr[inicio++].freq;
+    }
+    return inicio;
+}
+
+void add0 (InfSymbl arr[], int i) {
+    arr[i].binary_code *= 10;
+}
+
+void add1 (InfSymbl arr[], int i) {
+    arr[i].binary_code = (arr[i].binary_code)*10 + 1;
+} 
+
+atribuiBin (InfSymbl arr[], int inicio, int fim) {
+    freqDecres(arr, n);// tirar para função anterior   n->tamanho array
+    int aux = inicio;
+    int separa = split (arr, inicio, fim);
+    for(int i=0; i<=separa;i++) add0(arr, i);
+    for(int i=separa; i<n;i++) add1(arr, i);
+
+    atribuiBin(arr, aux, inicio);
+    atribuiBin(arr, (++separa),fim);
+}
 
 
 int correct_file (char s1[], char s2[]){
