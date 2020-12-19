@@ -8,12 +8,16 @@
 int main(int argc, char *argv[]){
     char line[1024];
 
-    scanf ("%s", &line);//ler do terminal ou dá como input??
+    if (strcmp (line, "shafa")){//é peta nao da assim pq \n
+    scanf ("%s", &line);
     
-    if (correct_file())
-    {
         /* code */
     }
+
+    argv[0];// primeira string até ao espaço que se escreve no terminal
+
+
+
 }
 
 
