@@ -7,10 +7,9 @@
 int main(int argc, char *argv[]){
     char line[1024];
 
+    if (strcmp (line, "shafa")){//é peta nao da assim pq \n
     scanf ("%s", &line);
     
-    if (strcmp (line, "shafa"))//é peta nao da assim pq \n
-    {
         /* code */
     }
 }
