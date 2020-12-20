@@ -20,7 +20,7 @@ typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um fich
 
 
 
-int modulo_t(char *fileName){
+int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para lá
     if(correct_file(fileName, "qerf.")){
         FILE *fp = fopen(fileName, "r+");
 
@@ -37,18 +37,18 @@ int modulo_t(char *fileName){
 
         LInt info_blocos; //criar função
 
-        LInt *inicio_info_blocos = info_blocos;
+        LInt *inicio_info_blocos = info_blocos; //LInt *inicio_info_blocos = &info_blocos; ??
 
         //while(fp) ver se é necessário, not sure
 
-        for(int nb = 1; nb <= num_blocos; nb++){
+        for (int nb = 1; nb <= num_blocos; nb++) {
             info_blocos->prox = criar_lista();
             
             info_blocos->nbloco = nb;
             fscanf(fp, "%d@", &info_blocos->tamanho_bloco);
             
-            for(int i=0; i<=256; i++){ //caso particular do ;; em que valor da freq é igual ao anterior
-                if(fscanf(fp, "%d", &info_blocos->arr[i].freq) == 1){
+            for (int i=0; i<=256; i++) { //caso particular do ;; em que valor da freq é igual ao anterior
+                if(fscanf(fp, "%d", &info_blocos->arr[i].freq) == 1){ // buffersize 256*8+255+1
                     ant_freq = &info_blocos->arr[i].freq;
                     info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
                     fseek(fp, 1, SEEK_CUR);
@@ -154,7 +154,7 @@ void converte (LInt *fichFinal) {
     while (fichFinal) {
         freqDecres(fichFinal->arr, TAMANHO);
         atribuiBin(fichFinal->arr, 0, --TAMANHO);
-        symblCres(arr, TAMANHO);
+        symblCres(arr, TAMANHO);// se calhar não compensa
 
         fichFinal = fichFinal->prox;
     }
@@ -185,3 +185,18 @@ void soBin(LInt *fichFinal) {
     // lligada nova struct?? 
 }
 
+char* read_block(FILE *fp) {
+    char c;
+    char *buffer = malloc(sizeof(char) *BUFFER_SIZE);
+    int i;
+    for(i = 0; (c = fgetc(fp)) != '@';i++)
+        buffer[i] = c;
+    buffer[i] = '\0';
+    return buffer;
+}
+
+
+
+// fazer as cenas
+
+// dar free do buffer
