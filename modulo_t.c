@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h> //vem daqui : clock(), CLOCKS_PER_SEC e clock_t
+#include <time.h>
 
- clock_t t; //variável para armazenar tempo
+
+#define int TAMANHO 256
 
 typedef struct info_symbl{
     int symbl;
@@ -13,7 +14,7 @@ typedef struct info_symbl{
 typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um ficheiro
     int nbloco; //número do bloco
     int tamanho_bloco; //tamano do bloco
-    InfSymbl arr[256]; //frequência de cada símbolo
+    InfSymbl arr[TAMANHO]; //frequência de cada símbolo
     struct lligada *prox;
 }*LInt;
 
@@ -35,11 +36,8 @@ int modulo_t(char *fileName){
         fscanf(fp, "@%c@%d@", &file_type, &num_blocos);
 
         LInt info_blocos; //criar função
-        //acrescentar 0 (*10)
-        //acrescentar 1 (*10+1)
 
         LInt *inicio_info_blocos = info_blocos;
-
 
         //while(fp) ver se é necessário, not sure
 
@@ -52,18 +50,19 @@ int modulo_t(char *fileName){
             for(int i=0; i<=256; i++){ //caso particular do ;; em que valor da freq é igual ao anterior
                 if(fscanf(fp, "%d", &info_blocos->arr[i].freq) == 1){
                     ant_freq = &info_blocos->arr[i].freq;
+                    info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
                     fseek(fp, 1, SEEK_CUR);
                 } else{
                     info_blocos->arr[i].freq = ant_freq;
+                    info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
                 }
             }
             info_blocos = info_blocos->prox;
         }
-
-        freqDecres(info_blocos->arr, 256);
-        
-
         fclose(fp);
+        LInt fichFinal = inicio_info_blocos;
+        converte (fichFinal); //posso destruir o apontador para o inicio ??
+        soBin(fichFinal);
     }else{
         printf("Tipo de ficheiro incorreto!");
     } 
@@ -76,7 +75,6 @@ void swap(int *xp, int *yp){
     *yp = temp;
 }
   
-// A function to implement bubble sort 
 void freqDecres(InfSymbl arr[], int n) {
     int i, j;
     for (i = 0; i < n-1; i++){
@@ -87,6 +85,18 @@ void freqDecres(InfSymbl arr[], int n) {
         }
     }
 }
+
+void symblCres(InfSymbl arr[], int n) {
+    int i, j;
+    for (i = 0; i < n-1; i++){
+        for (j = 0; j < n-i-1; j++){
+            if (arr[j].symbl < arr[j+1].symbl) {
+                swap(&arr[j], &arr[j+1]);
+            }
+        }
+    }
+}
+
 /*
 int somaFreq (InfSymbl arr[], int n) {
     int count = 0;
@@ -117,8 +127,8 @@ void add1 (InfSymbl arr[], int i) {
     arr[i].binary_code = (arr[i].binary_code)*10 + 1;
 } 
 
-atribuiBin (InfSymbl arr[], int inicio, int fim) {
-    freqDecres(arr, n);// tirar para função anterior   n->tamanho array
+void atribuiBin (InfSymbl arr[], int inicio, int fim) {
+
     int aux = inicio;
     int separa = split (arr, inicio, fim);
     for(int i=0; i<=separa;i++) add0(arr, i);
@@ -127,7 +137,6 @@ atribuiBin (InfSymbl arr[], int inicio, int fim) {
     atribuiBin(arr, aux, inicio);
     atribuiBin(arr, (++separa),fim);
 }
-
 
 int correct_file (char s1[], char s2[]){
     int i, j=0, ans=0;
@@ -140,3 +149,39 @@ int correct_file (char s1[], char s2[]){
 
     return ans;
 }
+
+void converte (LInt *fichFinal) {
+    while (fichFinal) {
+        freqDecres(fichFinal->arr, TAMANHO);
+        atribuiBin(fichFinal->arr, 0, --TAMANHO);
+        symblCres(arr, TAMANHO);
+
+        fichFinal = fichFinal->prox;
+    }
+}
+
+char *remove1digit (int val) {
+    int i, aux=val;
+    for (i=0; aux>=1; i++) {
+        aux = aux / 10;
+    }
+    char *pt=malloc(sizeof(char)*++i);
+    sprintf(pt, "%d", val);
+
+    for(int j=0; pt[j] != '\0';j++) pt[j]=pt[j+1];
+
+    char *reduct = malloc(sizeof(char)*--i);
+    strcpy(reduct, pt);
+    free (pt);
+    return reduct;
+}
+
+/*int main() {
+char *miyagilindo = remove1digit(101001);
+  return 0;
+}*/
+
+void soBin(LInt *fichFinal) {
+    // lligada nova struct?? 
+}
+
