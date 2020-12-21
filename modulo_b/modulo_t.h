@@ -17,3 +17,6 @@ typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um fich
 }*LInt;
 
 //ver que funções ficam e que funções por aqui
+
+
+#endif

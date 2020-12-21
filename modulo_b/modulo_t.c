@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "modulo_t.h"
 
 //ordenar funções todas
 
-
+/*
 int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para lá
     if(correct_file(fileName, "qerf.")){
         FILE *fp = fopen(fileName, "r+");
@@ -53,34 +54,24 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
     }else{
         printf("Tipo de ficheiro incorreto!");
     } 
-}
+}*/
 
 void swap(int *xp, int *yp){ 
-    int temp = *xp;
+    int temp = *xp; // n tem de ser InfSymb
     *xp = *yp;
     *yp = temp;
 }
-  
-void freqDecres(InfSymbl arr[], int n) { //tentar tirar o n
-    int i, j;
-    for (i = 0; i < n-1; i++){
-        for (j = 0; j < n-i-1; j++){
-            if (arr[j].freq < arr[j+1].freq){
-                swap(&arr[j], &arr[j+1]);
-            }
-        }
-    }
+
+void freqDecres(InfSymbl arr[]) { //tentar tirar o n
+    for (int i = 0; i < 255; i++)
+        for (int j = 0; j < 255-i; j++)
+            if (arr[j].freq < arr[j+1].freq) swap(&arr[j], &arr[j+1]);
 }
 
-void symblCres(InfSymbl arr[], int n) {
-    int i, j;
-    for (i = 0; i < n-1; i++){
-        for (j = 0; j < n-i-1; j++){
-            if (arr[j].symbl < arr[j+1].symbl) {
-                swap(&arr[j], &arr[j+1]);
-            }
-        }
-    }
+void symblCres(InfSymbl arr[]) {
+    for (int i = 0; i < 255; i++)
+        for (int j = 0; j < 255-i; j++)
+            if (arr[j].symbl < arr[j+1].symbl) swap(&arr[j], &arr[j+1]);
 }
 
 /*
@@ -92,11 +83,8 @@ int somaFreq (InfSymbl arr[], int n) {
     return count;
 }*/
 
-int split (InfSymbl arr[], int inicio, int fim /*, int count*/ ) {
-    int p1=0, p2=0;
-
-    p1 = arr[inicio].freq;
-    p2 = arr[fim].freq;
+int split (InfSymbl arr[], int inicio, int fim) {
+    int p1 = arr[inicio].freq, p2 = arr[fim].freq;
 
     while(inicio < (fim-1) ) {
         if (p2<p1) p2 += arr[fim--].freq;
@@ -118,7 +106,7 @@ void atribuiBin (InfSymbl arr[], int inicio, int fim) {
     int aux = inicio;
     int separa = split (arr, inicio, fim);
     for(int i=0; i<=separa;i++) add0(arr, i);
-    for(int i=separa; i<n;i++) add1(arr, i);
+    for(int i=separa; i<fim;i++) add1(arr, i);
 
     atribuiBin(arr, aux, inicio);
     atribuiBin(arr, (++separa),fim);
@@ -138,19 +126,18 @@ int correct_file (char s1[], char s2[]){
 
 void converte (LInt *info_blocos) {
     while (info_blocos) {
-        freqDecres(info_blocos->arr, TAMANHO);
-        atribuiBin(info_blocos->arr, 0, --TAMANHO);
-        symblCres(arr, TAMANHO);// se calhar não compensa
+        freqDecres((*info_blocos)->arr);
+        atribuiBin((*info_blocos)->arr, 0, 255);
+        symblCres((*info_blocos)->arr);// se calhar não compensa
 
-        info_blocos = info_blocos->prox;
+        info_blocos = (LInt) (*info_blocos)->prox;
     }
 }
 
 char *remove1digit (int val) {
     int i, aux=val;
-    for (i=0; aux>=1; i++) {
-        aux = aux / 10;
-    }
+    for (i=0; aux>=1; i++) aux = aux / 10;
+    
     char *pt = malloc(sizeof(char)*++i);
     sprintf(pt, "%d", val);
 
@@ -161,11 +148,6 @@ char *remove1digit (int val) {
     free (pt);
     return reduct;
 }
-
-/*int main() {
-char *miyagilindo = remove1digit(101001);
-  return 0;
-}*/
 
 void soBin(LInt *info_blocos) {
     // lligada nova struct?? 
@@ -280,6 +262,8 @@ int main () {
 
 
 int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para lá
+    clock_t tic = clock();
+
     if(correct_file(fileName, "qerf.")){
         int tambuffer;
         FILE *fp = fopen(fileName, "r+");
@@ -293,6 +277,7 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         tambuffer = ftell(fp);
         char *buffer = malloc(sizeof(char) * (++tambuffer) ); //ver se posso fazer se for rle assim ou se tem de ser por blocos
         
+        int i;
         for(i = 0; i<tambuffer-2 ;i++)
             buffer[i] = fgetc(fp);
         buffer[i] = '\0';
@@ -308,9 +293,13 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         LInt info_blocos = inicio_info_blocos; // sou burro e não é preciso criar novo
         converte (info_blocos); //posso destruir o apontador para o inicio ??
         soBin(info_blocos);
-        makeCod()
+        makeCod();
 
-        printInfo();
+        clock_t toc = clock();
+
+        float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC );
+
+        printInfo(info_blocos, num_blocos, tempExec);
     }
     else{
         printf("Tipo de ficheiro incorreto!");
@@ -319,7 +308,7 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
 
 int countDigits(int val) {
     int i;
-    for (i=0; val>=1 ;i++) (float)val /= 10;
+    for (i=0; val>=1 ;i++) val /= 10;
     return i;
 }
 
@@ -337,7 +326,7 @@ void makeAtribution (char *buffer, LInt info_blocos, char *file_type, int *num_b
         buffer = buffer + 1 + countDigits(info_blocos->tamanho_bloco);
             
         for (int i=0; i<=TAMANHO; i++) { //caso particular do ;; em que valor da freq é igual ao anterior
-            if(sscanf(fp, "%d", &info_blocos->arr[i].freq) == 1){ // buffersize 256*8+255+1
+            if(sscanf(buffer, "%d", &info_blocos->arr[i].freq) == 1){ // buffersize 256*8+255+1
                 ant_freq = &info_blocos->arr[i].freq;
                 info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
                 buffer = buffer + 1;
@@ -351,23 +340,19 @@ void makeAtribution (char *buffer, LInt info_blocos, char *file_type, int *num_b
     free (buffer);
 }
 
-printInfo(int num_blocos, float temExec) {
-    printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\n
-            MIEI -> Comunicação Dados ; ");
+printInfo(LInt info_blocos ,int num_blocos, float tempExec) {
+    printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\nMIEI -> Comunicação Dados ; ");
     printData(); //1 ou 2
-    printf("Módulo: t (cálculo dos códigos dos símbolos)\n
-            Número de Blocos: %d\n
-            Tamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
-    printTamBlocos();
-    printf("bytes\n
-            Tempo de execução do módulo (milissegundos): %f\n", tempExec);
+    printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
+    printTamBlocos(info_blocos, num_blocos);
+    printf("bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
     printf("Ficheiro gerado: ???\n");
 }
 
 printTamBlocos(LInt info_blocos, int num_blocos) {
     for (int aux = num_blocos; aux>0; ){
-        printf("| %d ", info_blocos->tamanho_bloco);
-        if(--aux > 0) printf("|");
+        printf("%d ", info_blocos->tamanho_bloco);
+        if(--aux > 0) printf("/ ");
     };
 }
 
@@ -392,22 +377,9 @@ printData2() {
 //Número de blocos: 2
 //Tamanho dos blocos analisados no ficheiro de símbolos: 57444/1620 bytes
 //Tempo de execução do módulo (milissegundos): 296
-Ficheiro gerado: exemplo.txt.rle.cod 
+//Ficheiro gerado: exemplo.txt.rle.cod                 ainda falta !!! 
 
 
 
 
-int main() // inserir na duncao modulo depois de decidida
-{
-    clock_t tic = clock();
 
-    // inserir função 
-
-    clock_t toc = clock();
-
-    float tempExec = (double)(toc-tic) / CLOCKS_PER_SEC );
-
-    printInfo( ?? );
-
-    return 0;
-}
