@@ -30,3 +30,40 @@ long tamanho_ficheiro(const char* ficheiro)
     return tamanho;
 }
 
+//Função que comprime o ficheiro
+int compressao (char* ficheiro){
+
+
+    unsigned long long total;
+    long long n_blocks;
+    unsigned long size_of_last_block, block_size;
+    FILE *fp;
+
+    // Using function fsize() when file is already opened
+    
+    block_size = 2048;
+    n_blocks = fsize(fp, NULL, &block_size, &size_of_last_block);
+    total = (n_blocks-1) * block_size + size_of_last_block;
+  
+   int c;
+   int n = 0;
+   int i;
+  
+   fp = fopen("file.txt","r");
+   if(fp == NULL) {
+      printf("Error in opening file");
+      return(-1); }
+   while (c = fgetc(fp) != '\0'){
+    char anterior =c;
+    i++;
+    
+
+
+   }
+      
+      
+
+   fclose(fp);
+   return(0);
+}
+

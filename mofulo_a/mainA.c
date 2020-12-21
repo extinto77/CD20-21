@@ -6,9 +6,6 @@
 int main(){
 clock_t begin = clock();
 
-/* here, do your time-consuming job */
-
-
     unsigned long long total;
     long long n_blocks;
     unsigned long size_of_last_block, block_size;
