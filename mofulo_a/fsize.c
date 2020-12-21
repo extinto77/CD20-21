@@ -4,7 +4,7 @@
 Function fsize() to get the size of files and the number of blocks contained
 in the file (for a given block size).
 
-The function works for files already opened (and pointed by <fp_in>) and also
+teste The function works for files already opened (and pointed by <fp_in>) and also
 for files not already opened (in this case the file is identified by <filename>).
 
 This function works on files of any size and on any operating system and on
