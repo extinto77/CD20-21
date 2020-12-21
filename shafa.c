@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "modulo_t.c"
+#include "modulo_t.h"
 
 
 int main(int argc, char *argv[]){
