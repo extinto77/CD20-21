@@ -1,74 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "modulo_t.h"
 
-//ordenar funções todas
 
-/*
-int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para lá
-    if(correct_file(fileName, "qerf.")){
-        FILE *fp = fopen(fileName, "r+");
-
-        if(fp == NULL){
-            printf("Não foi possível ler o ficheiro!");
-            return 0;
-        }
-
-        char file_type;
-        int num_blocos;
-        int ant_freq;
-
-        fscanf(fp, "@%c@%d@", &file_type, &num_blocos); //fseek(fp, 5, SEEK_CUR);
-
-        LInt info_blocos; //criar função
-
-        LInt *inicio_info_blocos = info_blocos; //LInt *inicio_info_blocos = &info_blocos; ??
-
-        //while(fp) ver se é necessário, not sure
-
-        for (int nb = 1; nb <= num_blocos; nb++) {
-            info_blocos->prox = criar_lista();
-            
-            info_blocos->nbloco = nb;
-            fscanf(fp, "%d@", &info_blocos->tamanho_bloco); //fseek(fp, 2, SEEK_CUR);
-            
-            for (int i=0; i<=TAMANHO; i++) { //caso particular do ;; em que valor da freq é igual ao anterior
-                if(fscanf(fp, "%d", &info_blocos->arr[i].freq) == 1){ // buffersize 256*8+255+1
-                    ant_freq = &info_blocos->arr[i].freq;
-                    info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
-                    fseek(fp, 1, SEEK_CUR);
-                } else{
-                    info_blocos->arr[i].freq = ant_freq;
-                    info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
-                }
-            }
-            info_blocos = info_blocos->prox;
-        }
-        fclose(fp);
-
-        info_blocos = *inicio_info_blocos;
-        converte (info_blocos); //posso destruir o apontador para o inicio ??
-        info_blocos = *inicio_info_blocos;
-        soBin(info_blocos);
-    }else{
-        printf("Tipo de ficheiro incorreto!");
-    } 
-}*/
-
-void swap(int *xp, int *yp){ 
-    int temp = *xp; // n tem de ser InfSymb
+void swap(InfSymbl *xp, InfSymbl *yp){ 
+    InfSymbl temp = *xp;
     *xp = *yp;
     *yp = temp;
 }
 
-void freqDecres(InfSymbl arr[]) { //tentar tirar o n
+void freqDecres(InfSymbl arr[]){
     for (int i = 0; i < 255; i++)
         for (int j = 0; j < 255-i; j++)
             if (arr[j].freq < arr[j+1].freq) swap(&arr[j], &arr[j+1]);
 }
 
-void symblCres(InfSymbl arr[]) {
+void symblCres(InfSymbl arr[]){
     for (int i = 0; i < 255; i++)
         for (int j = 0; j < 255-i; j++)
             if (arr[j].symbl < arr[j+1].symbl) swap(&arr[j], &arr[j+1]);
@@ -83,7 +32,7 @@ int somaFreq (InfSymbl arr[], int n) {
     return count;
 }*/
 
-int split (InfSymbl arr[], int inicio, int fim) {
+int split (InfSymbl arr[], int inicio, int fim){
     int p1 = arr[inicio].freq, p2 = arr[fim].freq;
 
     while(inicio < (fim-1) ) {
@@ -93,11 +42,11 @@ int split (InfSymbl arr[], int inicio, int fim) {
     return inicio;
 }
 
-void add0 (InfSymbl arr[], int i) {
+void add0 (InfSymbl arr[], int i){
     arr[i].binary_code *= 10;
 }
 
-void add1 (InfSymbl arr[], int i) {
+void add1 (InfSymbl arr[], int i){
     arr[i].binary_code = (arr[i].binary_code)*10 + 1;
 } 
 
@@ -130,7 +79,7 @@ void converte (LInt *info_blocos) {
         atribuiBin((*info_blocos)->arr, 0, 255);
         symblCres((*info_blocos)->arr);// se calhar não compensa
 
-        info_blocos = (LInt) (*info_blocos)->prox;
+        info_blocos = &((*info_blocos)->prox);
     }
 }
 
@@ -150,112 +99,89 @@ char *remove1digit (int val) {
 }
 
 void soBin(LInt *info_blocos) {
-    // lligada nova struct?? 
+    
 }
 
-// fazer as cenas
-
-// dar free do buffer
-
-
-
-
-
-
-
-
-
-
-
-/*
-#define BUFFER_SIZE 2304 // buffersize 256*8+255(';')+1('\0')
-
-FILE *fp = fopen(fileName, "r+");
-
-char *readFile (FILE *fp){
-    char file_type;
-    int num_blocos;
-    fscanf(fp, "@%c@%d@", &file_type, &num_blocos);
-
-    fazerStruct fixe; // valor = apontador do buffer
-    while(*fp /*&& fgetc(fp) != '0') { // ver fim da leitura
-        fixe->tamBloco
-        fixe->valor = readBlock(fp); // ou com '&' e '.'
-        fixe->prox;
-    }
-
-    write3info(fixe, file_type, num_blocos);
-}
-
-char *readBlock(FILE *fp) {
-    char c;
-    char *buffer = malloc(sizeof(char) *BUFFER_SIZE);
+int countDigits(int val) {
     int i;
-    for(i = 0; (c = fgetc(fp)) != '@';i++)
-        buffer[i] = c;
-    buffer[i] = '\0';
-    return buffer;
+    for (i=0; val>=1 ;i++) val /= 10;
+    return i;
 }
 
-write3info(fazerStruct fixe, char file_type, int num_blocos) {
+void makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos) {
     int ant_freq;
-    LInt info_blocos; //criar função
 
-    LInt *inicio_info_blocos = info_blocos;
+    sscanf(buffer, "@%c@%d@", file_type, num_blocos);
+    buffer = buffer + 4 + countDigits(*num_blocos);
+    int nb;
 
-    //while(fp) ver se é necessário, not sure
-
-    for (int nb = 1; nb <= num_blocos; nb++) {
-        info_blocos->prox = criar_lista();
-            
-        info_blocos->nbloco = nb;
-        fscanf(fp, "%d@", &info_blocos->tamanho_bloco);
+    for (nb = 1; nb <= *num_blocos; nb++) {
         
-        for (int i=0; i<=256; i++) { //caso particular do ;; em que valor da freq é igual ao anterior
-            if(fscanf(fp, "%d", &info_blocos->arr[i].freq) == 1){ // buffersize 256*8+255+1
-                ant_freq = &info_blocos->arr[i].freq;
-                info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
-                fseek(fp, 1, SEEK_CUR);
-            } else{
-                info_blocos->arr[i].freq = ant_freq;
-                info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
+        (*info_blocos)->nbloco = nb;
+        sscanf(buffer, "%d@", &((*info_blocos)->tamanho_bloco));
+        buffer = buffer + 1 + countDigits((*info_blocos)->tamanho_bloco);
+            
+        for (int i=0; i<=TAMANHO; i++) {
+            if(sscanf(buffer, "%d", &((*info_blocos)->arr[i].freq)) == 1){
+                ant_freq = (*info_blocos)->arr[i].freq;
+                (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
+                buffer = buffer + 1;
+            } else {
+                (*info_blocos)->arr[i].freq = ant_freq;
+                (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
             }
         }
-        info_blocos = info_blocos->prox;
+        if (nb <= *num_blocos){
+            (*info_blocos)->prox = malloc(sizeof(LInt));
+            info_blocos = &((*info_blocos)->prox);
+        }
     }
-}*/
+    free (buffer);
+}
 
-
-
-//------------------------------------
-
-
-/*
-int main () {
-   FILE *fp;
-   int tamfixe;
-
-   fp = fopen("file.txt", "r");
-   if( fp == NULL )  {
-      perror ("Error opening file");
-      return(-1);
-   }
-   fseek(fp, 0, SEEK_END);
-
-   tamfixe = ftell(fp);
-   fclose(fp);
-
-   
-
-   printf("Total size of file.txt = %d bytes\n", tamfixe);
-  
-   return(0);
+void makeCod(){
+    //fazer
 }
 
 
+void printTamBlocos(LInt info_blocos, int num_blocos) {
+    for (int aux = num_blocos; aux>0; ){
+        printf("%d ", info_blocos->tamanho_bloco);
+        if(--aux > 0) printf("/ ");
+    };
+}
 
-*/
+void printData1() { //mudar para printData
+    struct tm *cache;     
+    time_t now;
+    time(&now);   
+    cache = localtime(&now);
+ 
+    printf("Data:%02d-%02d-%d ; Hora:%02d%02d%02d\n", cache->tm_mday, cache->tm_mon+1, cache->tm_year+1900, 
+                                                        cache->tm_hour, cache->tm_min, cache->tm_sec);
+}
 
+void printData2() { //mudar para printData
+    time_t now;
+    time(&now);
+    printf("Data : %s\n", ctime(&now));
+}
+
+void printInfo(LInt info_blocos ,int num_blocos, float tempExec) {
+    printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\nMIEI -> Comunicação Dados ; ");
+    printData1(); //1 ou 2
+    printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
+    printTamBlocos(info_blocos, num_blocos);
+    printf("bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
+    printf("Ficheiro gerado: ???\n");
+}
+
+//John Doe, a12234, MIEI/CD, 1-jan-2021
+//Módulo: t (cálculo dos códigos dos símbolos)
+//Número de blocos: 2
+//Tamanho dos blocos analisados no ficheiro de símbolos: 57444/1620 bytes
+//Tempo de execução do módulo (milissegundos): 296
+//Ficheiro gerado: exemplo.txt.rle.cod                 ainda falta !!! 
 
 
 
@@ -276,7 +202,6 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         fseek(fp, 0, SEEK_END);
         tambuffer = ftell(fp);
         char *buffer = malloc(sizeof(char) * (++tambuffer) ); //ver se posso fazer se for rle assim ou se tem de ser por blocos
-        
         int i;
         for(i = 0; i<tambuffer-2 ;i++)
             buffer[i] = fgetc(fp);
@@ -284,16 +209,22 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
 
         fclose(fp);
 
-        LInt info_blocos;
-        LInt *inicio_info_blocos = info_blocos; //LInt *inicio_info_blocos = &info_blocos; ??
+        LInt info_blocos = malloc(sizeof(LInt));
+        LInt inicio_info_blocos = info_blocos;
+
+        //info_blocos->nbloco = 2;
+
         char file_type;
         int num_blocos;
 
-        makeAtribution(buffer, info_blocos, &file_type, &num_blocos);
-        LInt info_blocos = inicio_info_blocos; // sou burro e não é preciso criar novo
-        converte (info_blocos); //posso destruir o apontador para o inicio ??
-        soBin(info_blocos);
-        makeCod();
+        makeAtribution(buffer, &info_blocos, &file_type, &num_blocos); 
+        info_blocos=inicio_info_blocos;
+        converte (&info_blocos);
+        info_blocos=inicio_info_blocos;
+        soBin(&info_blocos);
+        info_blocos=inicio_info_blocos;
+        makeCod(&info_blocos);
+        info_blocos=inicio_info_blocos;
 
         clock_t toc = clock();
 
@@ -306,80 +237,11 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
     } 
 }
 
-int countDigits(int val) {
-    int i;
-    for (i=0; val>=1 ;i++) val /= 10;
-    return i;
-}
-
-void makeAtribution (char *buffer, LInt info_blocos, char *file_type, int *num_blocos) {
-    int ant_freq;
-
-    sscanf(buffer, "@%c@%d@", file_type, num_blocos);
-    buffer = buffer + 4 + countDigits(*num_blocos);
-
-    for (int nb = 1; nb <= *num_blocos; nb++) {
-        info_blocos->prox = criar_lista();
-            
-        info_blocos->nbloco = nb;
-        sscanf(buffer, "%d@", &info_blocos->tamanho_bloco);
-        buffer = buffer + 1 + countDigits(info_blocos->tamanho_bloco);
-            
-        for (int i=0; i<=TAMANHO; i++) { //caso particular do ;; em que valor da freq é igual ao anterior
-            if(sscanf(buffer, "%d", &info_blocos->arr[i].freq) == 1){ // buffersize 256*8+255+1
-                ant_freq = &info_blocos->arr[i].freq;
-                info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
-                buffer = buffer + 1;
-            } else {
-                info_blocos->arr[i].freq = ant_freq;
-                info_blocos->arr[i].binary_code = 1; //inicializat todos a 1
-            }
-        }
-        info_blocos = info_blocos->prox;
-    }
-    free (buffer);
-}
-
-printInfo(LInt info_blocos ,int num_blocos, float tempExec) {
-    printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\nMIEI -> Comunicação Dados ; ");
-    printData(); //1 ou 2
-    printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
-    printTamBlocos(info_blocos, num_blocos);
-    printf("bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
-    printf("Ficheiro gerado: ???\n");
-}
-
-printTamBlocos(LInt info_blocos, int num_blocos) {
-    for (int aux = num_blocos; aux>0; ){
-        printf("%d ", info_blocos->tamanho_bloco);
-        if(--aux > 0) printf("/ ");
-    };
-}
-
-void printData1() {
-    struct tm *cache;     
-    time_t now;
-    time(&now);   
-    cache = localtime(&now);
- 
-    printf("Data:%02d-%02d-%d ; Hora:%02d%02d%02d\n", cache->tm_mday, cache->tm_mon+1, cache->tm_year+1900, 
-                                                        cache->tm_hour, cache->tm_min, cache->tm_sec);
-}
-
-printData2() {
-    time_t now;
-    time(&now);
-    printf("Data : %s\n", ctime(&now));
-}
-
-//John Doe, a12234, MIEI/CD, 1-jan-2021
-//Módulo: t (cálculo dos códigos dos símbolos)
-//Número de blocos: 2
-//Tamanho dos blocos analisados no ficheiro de símbolos: 57444/1620 bytes
-//Tempo de execução do módulo (milissegundos): 296
-//Ficheiro gerado: exemplo.txt.rle.cod                 ainda falta !!! 
 
 
-
+int main(){
+    modulo_t("aaa.txt.freq");
+    return 1;
+};
 
 
