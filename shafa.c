@@ -6,17 +6,31 @@
 
 
 int main(int argc, char *argv[]){
-    char line[1024];
-
-    if (strcmp (line, "shafa")){//é peta nao da assim pq \n
-    scanf ("%s", &line);
+    char *filename = argv[1];
+    char *arg1 = argv[2];
+    char modulo = argv[3];
+    char *arg2 = argv[4];
+    char forceRLE = argv[5];
     
-        /* code */
+    if(strcmp(arg1, "-m") == 2){
+        switch (modulo){
+        case 'f':
+            
+            break;
+        case 't':
+            modulo_t(filename);
+            break;
+        case 'c':
+
+            break;
+        case 'd':
+
+            break;
+        default:
+            printf("Input errado!");
+            break;
+        }
     }
-
-    argv[0];// primeira string até ao espaço que se escreve no terminal
-
-
 
 }
 

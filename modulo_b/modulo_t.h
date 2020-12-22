@@ -1,6 +1,11 @@
 #ifndef MODULO_T_AKA_B
 #define MODULO_T_AKA_B
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+
 #define TAMANHO 256
 
 typedef struct info_symbl{
@@ -52,7 +57,7 @@ void printData1();
 
 void printData2();
 
-void printInfo(LInt info_blocos ,int num_blocos, float tempExec);
+void printInfo(LInt info_blocos ,int num_blocos /* float tempExec */);
 
 int modulo_t(char *fileName);
 

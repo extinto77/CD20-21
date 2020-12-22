@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
 #include "modulo_t.h"
 
 
@@ -51,7 +47,6 @@ void add1 (InfSymbl arr[], int i){
 } 
 
 void atribuiBin (InfSymbl arr[], int inicio, int fim) {
-
     int aux = inicio;
     int separa = split (arr, inicio, fim);
     for(int i=0; i<=separa;i++) add0(arr, i);
@@ -64,9 +59,9 @@ void atribuiBin (InfSymbl arr[], int inicio, int fim) {
 int correct_file (char s1[], char s2[]){
     int i, j=0, ans=0;
 
-    for(i=0;s1[i];i++);
+    for(i=0; s1[i]; i++);
 
-    for(i--,j; s2[j],s1[i]==s2[j]; i--,j++);
+    for(i--,j; s2[j], s1[i]==s2[j]; i--,j++);
 
     if(!s2[j]) ans = 1; //s2[j]=='\0'
 
@@ -116,7 +111,6 @@ void makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_
     int nb;
 
     for (nb = 1; nb <= *num_blocos; nb++) {
-        
         (*info_blocos)->nbloco = nb;
         sscanf(buffer, "%d@", &((*info_blocos)->tamanho_bloco));
         buffer = buffer + 1 + countDigits((*info_blocos)->tamanho_bloco);
@@ -167,12 +161,12 @@ void printData2() { //mudar para printData
     printf("Data : %s\n", ctime(&now));
 }
 
-void printInfo(LInt info_blocos ,int num_blocos, float tempExec) {
+void printInfo(LInt info_blocos ,int num_blocos /* float tempExec */) {
     printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\nMIEI -> Comunicação Dados ; ");
     printData1(); //1 ou 2
     printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
     printTamBlocos(info_blocos, num_blocos);
-    printf("bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
+    //printf("bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
     printf("Ficheiro gerado: ???\n");
 }
 
@@ -188,7 +182,7 @@ void printInfo(LInt info_blocos ,int num_blocos, float tempExec) {
 
 
 int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para lá
-    clock_t tic = clock();
+    //clock_t tic = clock();
 
     if(correct_file(fileName, "qerf.")){
         int tambuffer;
@@ -226,11 +220,11 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         makeCod(&info_blocos);
         info_blocos=inicio_info_blocos;
 
-        clock_t toc = clock();
+       // clock_t toc = clock();
 
-        float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC );
+        //float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC );
 
-        printInfo(info_blocos, num_blocos, tempExec);
+        printInfo(info_blocos, num_blocos /* tempExec */);
     }
     else{
         printf("Tipo de ficheiro incorreto!");
@@ -242,6 +236,4 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
 int main(){
     modulo_t("aaa.txt.freq");
     return 1;
-};
-
-
+}
