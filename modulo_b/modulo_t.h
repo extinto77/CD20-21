@@ -47,7 +47,7 @@ void soBin(LInt *info_blocos);
 
 int countDigits(int val);
 
-void makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos);
+void makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_blocos);
 
 void makeCo();
 
