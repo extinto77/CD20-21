@@ -46,14 +46,19 @@ void add1 (InfSymbl arr[], int i){
     arr[i].binary_code = (arr[i].binary_code)*10 + 1;
 } 
 
-void atribuiBin (InfSymbl arr[], int inicio, int fim) {
-    int aux = inicio;
-    int separa = split (arr, inicio, fim);
-    for(int i=0; i<=separa;i++) add0(arr, i);
-    for(int i=separa; i<fim;i++) add1(arr, i);
+void atribuiBin (InfSymbl arr[], int inicio, int fim){ //rever ???
+    if(inicio == fim || inicio == fim+1){
+        add0(arr,inicio);
+        add1(arr, fim);
+    }else{
+        int aux = inicio;
+        int separa = split (arr, inicio, fim);
+        for(int i=0; i<=separa;i++) add0(arr, i);
+        for(int i=separa; i<fim;i++) add1(arr, i);
 
-    atribuiBin(arr, aux, inicio);
-    atribuiBin(arr, (++separa),fim);
+        atribuiBin(arr, aux, separa);
+        atribuiBin(arr, (++separa),fim);
+    }
 }
 
 int correct_file (char s1[], char s2[]){
@@ -71,7 +76,9 @@ int correct_file (char s1[], char s2[]){
 void converte (LInt *info_blocos) {
     while (info_blocos) {
         freqDecres((*info_blocos)->arr);
-        atribuiBin((*info_blocos)->arr, 0, 255);
+        int fim;
+        for(int i = 0; (*info_blocos)->arr[i].freq != 0 && i<256; i++) fim = i;
+        atribuiBin((*info_blocos)->arr, 0, fim);
         symblCres((*info_blocos)->arr); // se calhar não compensa
 
         info_blocos = &((*info_blocos)->prox);
@@ -108,9 +115,9 @@ void makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_bl
 
     sscanf(buffer, "@%c@%d@", &file_type, &num_blocos);
     buffer = buffer + 4 + countDigits(num_blocos);
-    int nb;
 
-    for (nb = 1; nb <= num_blocos; nb++) {
+    for (int nb = 1; nb <= num_blocos; nb++){
+        *info_blocos = malloc(sizeof(struct lligada));
         (*info_blocos)->nbloco = nb;
         sscanf(buffer, "%d@", &((*info_blocos)->tamanho_bloco));
         buffer = buffer + 1 + countDigits((*info_blocos)->tamanho_bloco);
@@ -118,17 +125,17 @@ void makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_bl
         for (int i=0; i<=TAMANHO; i++) {
             if(sscanf(buffer, "%d", &((*info_blocos)->arr[i].freq)) == 1){
                 ant_freq = (*info_blocos)->arr[i].freq;
+                (*info_blocos)->arr[i].symbl = i;
+                (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
+                buffer = buffer + 1 + countDigits(ant_freq);
+            }else{
+                (*info_blocos)->arr[i].freq = ant_freq;
+                (*info_blocos)->arr[i].symbl = i;
                 (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
                 buffer = buffer + 1;
-            } else {
-                (*info_blocos)->arr[i].freq = ant_freq;
-                (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
             }
         }
-        if (nb <= num_blocos){
-            (*info_blocos)->prox = malloc(sizeof(LInt));
-            info_blocos = &((*info_blocos)->prox);
-        }
+        info_blocos = &((*info_blocos)->prox);
     }
     //free (buffer);
 }
@@ -182,7 +189,7 @@ void printInfo(LInt info_blocos ,int num_blocos /* float tempExec */) {
 
 
 int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para lá
-    //clock_t tic = clock();
+    clock_t tic = clock();
 
     if(correct_file(fileName, "qerf.")){
         FILE *fp = fopen(fileName, "r");
@@ -198,8 +205,7 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         char buffer[tambuffer+1]; //ver se posso fazer se for rle assim ou se tem de ser por blocos
         int count = fread(&buffer, tambuffer+1, 1, fp);
 
-        LInt info_blocos = malloc(sizeof(LInt));
-        //info_blocos->nbloco = 2;
+        LInt info_blocos;
 
         char file_type;
         int num_blocos;
@@ -209,9 +215,9 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         soBin(&info_blocos);
         makeCod(&info_blocos);
 
-       // clock_t toc = clock();
+       clock_t toc = clock();
 
-        //float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC );
+        float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC );
 
         printInfo(info_blocos, num_blocos /* tempExec */);
         fclose(fp);
