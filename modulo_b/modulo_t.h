@@ -51,7 +51,7 @@ void makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_bl
 
 void makeCo();
 
-void printTamBlocos(LInt info_blocos, int num_blocos);
+void printTamBlocos(LInt *info_blocos);
 
 void printData1();
 

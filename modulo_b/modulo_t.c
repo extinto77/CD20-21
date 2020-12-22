@@ -53,11 +53,12 @@ void atribuiBin (InfSymbl arr[], int inicio, int fim){ //rever ???
     }else{
         int aux = inicio;
         int separa = split (arr, inicio, fim);
-        for(int i=0; i<=separa;i++) add0(arr, i);
-        for(int i=separa; i<fim;i++) add1(arr, i);
 
         atribuiBin(arr, aux, separa);
         atribuiBin(arr, (++separa),fim);
+
+        for(int i=0; i<=separa;i++) add0(arr, i);
+        for(int i=separa; i<fim;i++) add1(arr, i);
     }
 }
 
@@ -145,11 +146,11 @@ void makeCod(){
 }
 
 
-void printTamBlocos(LInt info_blocos, int num_blocos) {
-    for (int aux = num_blocos; aux>0; ){
-        printf("%d ", info_blocos->tamanho_bloco);
-        if(--aux > 0) printf("/ ");
-    }
+void printTamBlocos(LInt *info_blocos) {
+    do{
+        printf("%d", (*info_blocos)->tamanho_bloco);
+        printf("/");
+    }while((*info_blocos));
 }
 
 void printData1() { //mudar para printData
@@ -172,7 +173,7 @@ void printInfo(LInt info_blocos ,int num_blocos /* float tempExec */) {
     printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\nMIEI -> Comunicação Dados ; ");
     printData1(); //1 ou 2
     printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
-    printTamBlocos(info_blocos, num_blocos);
+    printTamBlocos(&info_blocos);
     //printf("bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
     printf("Ficheiro gerado: ???\n");
 }
