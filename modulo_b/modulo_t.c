@@ -29,13 +29,19 @@ int somaFreq (InfSymbl arr[], int n) {
 }*/
 
 int split (InfSymbl arr[], int inicio, int fim){
-    int p1 = arr[inicio].freq, p2 = arr[fim].freq;
+    int auxi = inicio, auxf = fim;
+    int p1 = arr[auxi].freq, p2 = arr[auxf].freq;
 
-    while(inicio < (fim-1) ) {
-        if (p2<p1) p2 += arr[fim--].freq;
-        else p1 += arr[inicio++].freq;
+    while(auxi <= (auxf-1)) {
+        if (p2<p1){
+            p2 += arr[auxf].freq; 
+            auxf--;
+        }else{
+            p1 += arr[auxi].freq;
+            auxi++;
+        } 
     }
-    return inicio;
+    return auxi;
 }
 
 void add0 (InfSymbl arr[], int i){
@@ -47,24 +53,22 @@ void add1 (InfSymbl arr[], int i){
 } 
 
 void atribuiBin (InfSymbl arr[], int inicio, int fim){ //rever ???
-    if (inicio == fim) add0(arr, inicio);
+    if (inicio == fim) add1(arr, fim);
 
     else{
         if(fim == inicio+1){
             add0(arr, inicio);
             add1(arr, fim);
-        }
-        else{
+        }else{
             int separa = split (arr, inicio, fim);
         
             for(int i=inicio; i<=separa;i++) add0(arr, i);
-            for(int i=separa; i<fim;i++) add1(arr, i);
+            for(int i=separa+1; i<fim;i++) add1(arr, i);
 
-            atribuiBin(arr, inicio, separa);
-            atribuiBin(arr, (++separa),fim);
+            //atribuiBin(arr, inicio, separa);
+            atribuiBin(arr, separa+1,fim);
         }
     }
-
 }
 
 int correct_file (char s1[], char s2[]){
