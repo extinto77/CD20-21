@@ -47,19 +47,24 @@ void add1 (InfSymbl arr[], int i){
 } 
 
 void atribuiBin (InfSymbl arr[], int inicio, int fim){ //rever ???
-    if(inicio == fim || inicio == fim+1){
-        add0(arr,inicio);
-        add1(arr, fim);
-    }else{
-        int aux = inicio;
-        int separa = split (arr, inicio, fim);
+    if (inicio == fim) add0(arr, inicio);
 
-        atribuiBin(arr, aux, separa);
-        atribuiBin(arr, (++separa),fim);
+    else{
+        if(fim == inicio+1){
+            add0(arr, inicio);
+            add1(arr, fim);
+        }
+        else{
+            int separa = split (arr, inicio, fim);
+        
+            for(int i=inicio; i<=separa;i++) add0(arr, i);
+            for(int i=separa; i<fim;i++) add1(arr, i);
 
-        for(int i=0; i<=separa;i++) add0(arr, i);
-        for(int i=separa; i<fim;i++) add1(arr, i);
+            atribuiBin(arr, inicio, separa);
+            atribuiBin(arr, (++separa),fim);
+        }
     }
+
 }
 
 int correct_file (char s1[], char s2[]){
@@ -213,6 +218,7 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
 
         makeAtribution(buffer, &info_blocos, file_type, num_blocos);
         converte (&info_blocos);
+
         soBin(&info_blocos);
         makeCod(&info_blocos);
 
@@ -234,3 +240,4 @@ int main(){
     modulo_t("aaa.txt.freq");
     return 1;
 }
+
