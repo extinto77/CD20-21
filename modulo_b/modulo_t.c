@@ -16,7 +16,7 @@ void freqDecres(InfSymbl arr[]){
 void symblCres(InfSymbl arr[]){
     for (int i = 0; i < 255; i++)
         for (int j = 0; j < 255-i; j++)
-            if (arr[j].symbl < arr[j+1].symbl) swap(&arr[j], &arr[j+1]);
+            if (arr[j].symbl > arr[j+1].symbl) swap(&arr[j], &arr[j+1]);
 }
 
 /*
@@ -31,6 +31,8 @@ int somaFreq (InfSymbl arr[], int n) {
 int split (InfSymbl arr[], int inicio, int fim){
     int auxi = inicio, auxf = fim;
     int p1 = arr[auxi].freq, p2 = arr[auxf].freq;
+
+    if (inicio == fim) return (auxi=-1);
 
     while(auxi <= (auxf-1)) {
         if (p2<p1){
@@ -53,19 +55,22 @@ void add1 (InfSymbl arr[], int i){
 } 
 
 void atribuiBin (InfSymbl arr[], int inicio, int fim){ //rever ???
-    if (inicio == fim) add1(arr, fim);
+    
+    if (inicio == fim) add0(arr, inicio);
 
     else{
+        int separa = split (arr, inicio, fim);
+
+        if(separa<0) return;
+
         if(fim == inicio+1){
             add0(arr, inicio);
             add1(arr, fim);
         }else{
-            int separa = split (arr, inicio, fim);
-        
             for(int i=inicio; i<=separa;i++) add0(arr, i);
             for(int i=separa+1; i<fim;i++) add1(arr, i);
 
-            //atribuiBin(arr, inicio, separa);
+            atribuiBin(arr, inicio, separa);
             atribuiBin(arr, separa+1,fim);
         }
     }
@@ -84,11 +89,12 @@ int correct_file (char s1[], char s2[]){
 }
 
 void converte (LInt *info_blocos) {
-    while (info_blocos) {
+    while ((*info_blocos)->prox) {
         freqDecres((*info_blocos)->arr);
         int fim;
         for(int i = 0; (*info_blocos)->arr[i].freq != 0 && i<256; i++) fim = i;
         atribuiBin((*info_blocos)->arr, 0, fim);
+        
         symblCres((*info_blocos)->arr); // se calhar não compensa
 
         info_blocos = &((*info_blocos)->prox);
@@ -128,6 +134,7 @@ void makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_bl
 
     for (int nb = 1; nb <= num_blocos; nb++){
         *info_blocos = malloc(sizeof(struct lligada));
+
         (*info_blocos)->nbloco = nb;
         sscanf(buffer, "%d@", &((*info_blocos)->tamanho_bloco));
         buffer = buffer + 1 + countDigits((*info_blocos)->tamanho_bloco);
@@ -145,9 +152,10 @@ void makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_bl
                 buffer = buffer + 1;
             }
         }
-        info_blocos = &((*info_blocos)->prox);
+        info_blocos = &((*info_blocos)->prox);        
     }
-    //free (buffer);
+    *info_blocos = NULL;
+    free (buffer);
 }
 
 void makeCod(){
@@ -202,7 +210,7 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
     clock_t tic = clock();
 
     if(correct_file(fileName, "qerf.")){
-        FILE *fp = fopen(fileName, "r");
+        FILE *fp = fopen(fileName, "rb");
 
         if(fp == NULL){
             printf("Não foi possível ler o ficheiro!");
@@ -216,14 +224,15 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         int count = fread(&buffer, tambuffer+1, 1, fp);
 
         LInt info_blocos;
-
         char file_type;
         int num_blocos;
 
         makeAtribution(buffer, &info_blocos, file_type, num_blocos);
+
         converte (&info_blocos);
 
         soBin(&info_blocos);
+        
         makeCod(&info_blocos);
 
        clock_t toc = clock();
