@@ -39,17 +39,17 @@ void atribuiBin (InfSymbl arr[], int inicio, int fim);
 
 int correct_file (char s1[], char s2[]);
 
-void converte (LInt *info_blocos);
+void converte (LInt *info_blocos, int *medidas);
+
+void countBuffer(LInt *info_blocos, int *tamanho);
 
 char *remove1digit (int val);
 
-void soBin(LInt *info_blocos);
-
 int countDigits(int val);
 
-void makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_blocos);
+int makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_blocos);
 
-void makeCo();
+void writeBuffer(LInt *info_blocos, char *bufferFinal, int indice, int num_blocos, char filetype);
 
 void printTamBlocos(LInt *info_blocos);
 
@@ -57,10 +57,9 @@ void printData1();
 
 void printData2();
 
-void printInfo(LInt info_blocos ,int num_blocos /* float tempExec */);
+void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe);
 
 int modulo_t(char *fileName);
-
 
 
 #endif
