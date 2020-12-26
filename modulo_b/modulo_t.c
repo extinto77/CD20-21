@@ -55,24 +55,20 @@ void add1 (InfSymbl arr[], int i){
 } 
 
 void atribuiBin (InfSymbl arr[], int inicio, int fim){ //rever ???
-    
-    if (inicio == fim) add0(arr, inicio);
+    //if (inicio == fim) add0(arr, inicio);
+    int separa = split (arr, inicio, fim);
 
-    else{
-        int separa = split (arr, inicio, fim);
+    if(separa<0) return;
 
-        if(separa<0) return;
+    if(fim == inicio+1){
+        add0(arr, inicio);
+        add1(arr, fim);
+    }else{
+        for(int i=inicio; i<=separa;i++) add0(arr, i);
+        for(int i=separa+1; i<=fim;i++) add1(arr, i);
 
-        if(fim == inicio+1){
-            add0(arr, inicio);
-            add1(arr, fim);
-        }else{
-            for(int i=inicio; i<=separa;i++) add0(arr, i);
-            for(int i=separa+1; i<fim;i++) add1(arr, i);
-
-            atribuiBin(arr, inicio, separa);
-            atribuiBin(arr, separa+1,fim);
-        }
+        atribuiBin(arr, inicio, separa);
+        atribuiBin(arr, separa+1,fim);
     }
 }
 
@@ -154,8 +150,8 @@ void makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_bl
         }
         info_blocos = &((*info_blocos)->prox);        
     }
-    *info_blocos = NULL;
-    free (buffer);
+    (*info_blocos) = NULL;
+    //free (buffer);
 }
 
 void makeCod(){
