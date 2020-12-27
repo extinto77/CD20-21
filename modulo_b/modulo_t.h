@@ -41,21 +41,19 @@ int correct_file (char s1[], char s2[]);
 
 void converte (LInt *info_blocos, int *medidas);
 
-void countBuffer(LInt *info_blocos, int *tamanho);
+int countBuffer(LInt *info_blocos);
 
 char *remove1digit (int val);
 
 int countDigits(int val);
 
-int makeAtribution (char *buffer, LInt *info_blocos, char file_type, int num_blocos);
+int makeAtribution (char *buffer, LInt *info_blocos, char file_type, int *num_blocos);
 
-void writeBuffer(LInt *info_blocos, char *bufferFinal, int indice, int num_blocos, char filetype);
+void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char filetype);
 
 void printTamBlocos(LInt *info_blocos);
 
-void printData1();
-
-void printData2();
+void printData();
 
 void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe);
 
