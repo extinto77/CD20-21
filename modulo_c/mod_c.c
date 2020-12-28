@@ -17,7 +17,13 @@ if((file=fopen("C:\\Users\\ste\\Desktop\\file.txt", "r"))==NULL)
     exit(1);
 }*/
 
+char** codigos;
 
+char* rawCodigos;
+
+char* dados;
+
+int tam;
 
 int bytearr[8]; 
 
@@ -31,6 +37,19 @@ char bytearr_to_byte(){
 	return (char) res;
 }
 
+
+
+int povoaCods(String filename){
+	codigos = (char **)malloc(256 * sizeof(char *));
+    int tam = 0;
+
+	for(int i = 0; i < 256; i++){
+		/* codigo */
+        
+
+		codigos[i] = (char *)malloc(tam * sizeof(char));
+	}
+}
 
 
 
