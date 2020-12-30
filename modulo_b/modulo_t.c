@@ -84,15 +84,14 @@ int correct_file (char s1[], char s2[]){
     return ans;
 }
 
-void converte (LInt *info_blocos, int *tamanho) {
-    int acc=0;
-    while (*info_blocos) { // while ((*info_blocos)->prox) {   antigo
+void converte (LInt *info_blocos, int *tamanhoBin) {
+    while (*info_blocos) {
         freqDecres((*info_blocos)->arr);
         int fim;
         for(int i = 0; (*info_blocos)->arr[i].freq != 0 && i<256; i++) fim = i;
         atribuiBin((*info_blocos)->arr, 0, fim);
         
-        (*tamanho) += countBuffer(info_blocos);
+        (*tamanhoBin) += countBuffer(info_blocos);
         
         symblCres((*info_blocos)->arr);
 
@@ -174,20 +173,26 @@ void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *fil
     while (*info_blocos) {
         sprintf(bufferFinal+indice, "@%d@", (*info_blocos)->tamanho_bloco);
         indice += 2 + countDigits( (*info_blocos)->tamanho_bloco );
-        for(int i=0; i<256 ; i++) {
-            if ((*info_blocos)->arr->freq == 0) {
+        for(int i = 0; i < 255 ; i++){
+            if ((*info_blocos)->arr[i].freq == 0) {
                 sprintf(bufferFinal+indice,";");
                 indice++;
-            }
-            else{
+            }else{
                 char *str1 = malloc(sizeof(char)*9);
-                str1 = remove1digit((*info_blocos)->arr->binary_code);
+                str1 = remove1digit((*info_blocos)->arr[i].binary_code);
                 sprintf(bufferFinal+indice,"%s;", str1);
-                indice += strlen(str1);
+                indice += strlen(str1) + 1;
                 free(str1);
             }
         }
-    info_blocos = &((*info_blocos)->prox);   
+        if((*info_blocos)->arr[255].freq != 0){
+            char *str1 = malloc(sizeof(char)*9);
+            str1 = remove1digit((*info_blocos)->arr[255].binary_code);
+            sprintf(bufferFinal+indice,"%s", str1);
+            indice += strlen(str1) + 1;
+            free(str1);
+        }
+        info_blocos = &((*info_blocos)->prox);   
     }
     sprintf(bufferFinal+indice, "@0");
 }
@@ -246,8 +251,9 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         int tamanhoBin = 0;
         converte (&info_blocos, &tamanhoBin);
 
-        int tamFinal = 4 + countDigits(num_blocos) + digitsTams + 256*num_blocos + tamanhoBin;
-        char bufferFinal[tamFinal+1]; // + \0
+        //int tamFinal = 4 + countDigits(num_blocos) + digitsTams + 256*num_blocos + tamanhoBin + 4; 
+        int tamFinal = 3 + countDigits(num_blocos) + 257*num_blocos + digitsTams + tamanhoBin + 2;
+        char bufferFinal[tamFinal]; // + \0
         writeBuffer(&info_blocos, bufferFinal, num_blocos, file_type);
 
         char *fixe = malloc(sizeof(char)*(strlen(fileName)+5));
