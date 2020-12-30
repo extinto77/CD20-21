@@ -86,7 +86,7 @@ int correct_file (char s1[], char s2[]){
 
 void converte (LInt *info_blocos, int *tamanho) {
     int acc=0;
-    while ((*info_blocos)->prox) { // assim não analisa o último bloco??
+    while (*info_blocos) { // while ((*info_blocos)->prox) {   antigo
         freqDecres((*info_blocos)->arr);
         int fim;
         for(int i = 0; (*info_blocos)->arr[i].freq != 0 && i<256; i++) fim = i;
@@ -130,10 +130,10 @@ int countDigits(int val) {
     return i;
 }
 
-int makeAtribution (char *buffer, LInt *info_blocos, char file_type, int *num_blocos){
+int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos){
     int digitsTams = 0, ant_freq;
 
-    sscanf(buffer, "@%c@%d@", &file_type, num_blocos);
+    sscanf(buffer, "@%c@%d@", file_type, num_blocos);
     buffer = buffer + 4 + countDigits(*num_blocos);
 
     for (int nb = 1; nb <= *num_blocos; nb++){
@@ -155,10 +155,11 @@ int makeAtribution (char *buffer, LInt *info_blocos, char file_type, int *num_bl
                 (*info_blocos)->arr[i].freq = ant_freq;
                 (*info_blocos)->arr[i].symbl = i;
                 (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
-                buffer = buffer + 1;
+                buffer = buffer + 1; //buffer += 1
             }
         }
-        info_blocos = &((*info_blocos)->prox);        
+        info_blocos = &((*info_blocos)->prox);
+        buffer = buffer + 1;
     }
     (*info_blocos) = NULL;
     
@@ -166,16 +167,25 @@ int makeAtribution (char *buffer, LInt *info_blocos, char file_type, int *num_bl
     return digitsTams;
 }
 
-void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char filetype){
+void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *file_type){
     int indice = 0;
-    sprintf (bufferFinal, "@%c@%d@",filetype, num_blocos );
-    indice += 4 + countDigits(num_blocos);
+    sprintf (bufferFinal, "@%c@%d",file_type[0], num_blocos );
+    indice += 3 + countDigits(num_blocos);
     while (*info_blocos) {
-        sprintf(bufferFinal+indice, "%d", (*info_blocos)->tamanho_bloco);
-        indice += countDigits( (*info_blocos)->tamanho_bloco );
+        sprintf(bufferFinal+indice, "@%d@", (*info_blocos)->tamanho_bloco);
+        indice += 2 + countDigits( (*info_blocos)->tamanho_bloco );
         for(int i=0; i<256 ; i++) {
-            sprintf(bufferFinal+indice,"%s",remove1digit((*info_blocos)->arr->binary_code) );
-            indice += strlen(remove1digit((*info_blocos)->arr->binary_code));
+            if ((*info_blocos)->arr->freq == 0) {
+                sprintf(bufferFinal+indice,";");
+                indice++;
+            }
+            else{
+                char *str1 = malloc(sizeof(char)*9);
+                str1 = remove1digit((*info_blocos)->arr->binary_code);
+                sprintf(bufferFinal+indice,"%s;", str1);
+                indice += strlen(str1);
+                free(str1);
+            }
         }
     info_blocos = &((*info_blocos)->prox);   
     }
@@ -224,11 +234,11 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         unsigned int tambuffer = ftell(fp);
         fseek(fp, 0, SEEK_SET);
         char buffer[tambuffer+1];
-        int count = fread(&buffer, tambuffer+1, 1, fp); // para que é o count ??
+        fread(&buffer, tambuffer+1, 1, fp); 
         fclose(fp);
 
         LInt info_blocos;
-        char file_type;
+        char *file_type = malloc(sizeof(char)*2);
         int num_blocos = 0;
         
         int digitsTams = makeAtribution(buffer, &info_blocos, file_type, &num_blocos);
@@ -244,7 +254,8 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         strcpy(fixe,fileName);
         strcat(fixe, ".cod");
 
-        FILE *fpf = fopen ("fixe.txt.cod", "w");
+        fclose(fopen(fixe,"w"));
+        FILE *fpf = fopen (fixe, "w");
         
         //fprintf(fpf, "%s", buffer);
         fwrite(bufferFinal ,1 ,tamFinal+1 , fpf);
@@ -258,9 +269,6 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
     }
     else printf("Tipo de ficheiro incorreto!");
 }
-
-
-
 
 
 int main(){

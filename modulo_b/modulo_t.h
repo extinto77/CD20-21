@@ -47,9 +47,9 @@ char *remove1digit (int val);
 
 int countDigits(int val);
 
-int makeAtribution (char *buffer, LInt *info_blocos, char file_type, int *num_blocos);
+int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos);
 
-void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char filetype);
+void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *file_type);
 
 void printTamBlocos(LInt *info_blocos);
 
