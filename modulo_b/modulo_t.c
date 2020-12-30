@@ -178,11 +178,8 @@ void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *fil
                 sprintf(bufferFinal+indice,";");
                 indice++;
             }else{
-                char *str1 = malloc(sizeof(char)*9);
-                str1 = remove1digit((*info_blocos)->arr[i].binary_code);
-                sprintf(bufferFinal+indice,"%s;", str1);
-                indice += strlen(str1) + 1;
-                free(str1);
+                sprintf(bufferFinal+indice,"%s;", remove1digit((*info_blocos)->arr[i].binary_code));
+                indice += strlen(remove1digit((*info_blocos)->arr[i].binary_code)) + 1;
             }
         }
         if((*info_blocos)->arr[255].freq != 0){
