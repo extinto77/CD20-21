@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include "modulo_a.h"
 #include "fsize.h"
 
@@ -33,7 +34,7 @@ long funcaotamanho_ficheiro(const char* ficheiro)
 //Função que comprime o ficheiro
 int compressao (char* ficheiro, char* lista, unsigned long tamanhobloco, int bloco){
 
-char nomeFicheiro[100];
+char nomeFicheiro[200];
 strcpy (nomeFicheiro,ficheiro);
 char extensaoRLE = ".rle";
 strcat(nomeFicheiro, extensaoRLE);
@@ -43,56 +44,57 @@ FILE *fp = fopen("aaa.txt", "ab");
 if (fp == NULL) printf ("Erro abrir ficheiro");
 
 fseek(fp, (tamanhobloco*bloco),SEEK_SET);
-int i =0;
+int i = 0;
 char atual = lista[i];
 char anterior;
-int c= 0;
+int c = 0;
 int carateres = 0;
-unsigned char novoContador;
-while (lista[i]) {
+
+
+for ( i; lista[i]; i++ {
    anterior = atual;
-   i++;
    atual = lista [i];
    
    if (atual == anterior) c++;
    else {
-       if (c <= 3){
-           while (c != 0) {
+       if (c >= 4 ){
+
+
+           fputc ('\0', fp);
+           fprintf (fp, "%c", anterior);
+           fputc (c, fp);
+           carateres += 3;
+           c = 1;
+
+           }
+       } else {
+            while (c != 0) {
                fputc(anterior, fp);
                c--;
                carateres++;
-
-           }
-           contador = 1;
-       } else {
-           fputc ('\0', fp);
-           fprintf (fp, "%c", anterior);
-           novoContador = c;
-           fputc (novoContador, fp);
-           carateres += 3;
-           c = 1;
        }
-
+        c = 1;
    }
 }
+
+
 fclose(fp);
-int j,crle = 0;
+
 int taxa;
-while (lista [i]){
-j++;
-crle;
-}
-taxa= (((abs(crle-carateres))/crle)*100);
+
+for (int j = 0;lista [j];j++);
+
+taxa= (((abs(j-carateres))/j)*100);
 return taxa;
 }
 
 
 
-char* novaLista (char* ficheiro, unsigned long tamanhobloco, int bloco, unsigned long long tamanhoficheiro){
+char* novaLista (char* ficheiro, unsigned long tamanho_bloco, int bloco, unsigned long long tamanhoficheiro){
     int i = 0;
  char* lista = malloc(sizeof(char)*tamanho_bloco);
  FILE* fp = fopen(ficheiro, "rb");
- if (fp== NULL) printf ("Erro abrir ficheiro");
+ if (fp == NULL) printf ("Erro abrir ficheiro");
  fseek(fp,( tamanho_bloco * bloco), SEEK_SET);
  fread (lista, tamanho_bloco,1,fp);
  lista[tamanho_bloco] = '\0';
@@ -108,19 +110,15 @@ char* novaLista (char* ficheiro, unsigned long tamanhobloco, int bloco, unsigned
 
 
    int moduloA (char* ficheiro, unsigned long tamanhobloco, unsigned long long tamanho_ficheiro, long long numeroblocos){
-       if (tamanho_ficheiro <= 1024){
-           printf ("Ficheiro demasiado pequeno");
-           return 0;
-       }
+      
        int bloco = 0;
        char* lista = novaLista(ficheiro, tamanhobloco, bloco, tamanho_ficheiro);
        
     int percentagem = compressao (ficheiro,lista, tamanhobloco, bloco);
     
-   }
-      
-      
 
+      
+    
    fclose(fp);
    return 0;
 }
