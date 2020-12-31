@@ -124,6 +124,7 @@ char *remove1digit (int val) {
 }
 
 int countDigits(int val) {
+    if (val==0) return 1;
     int i;
     for (i=0; val>=1 ;i++) val /= 10;
     return i;
@@ -132,33 +133,33 @@ int countDigits(int val) {
 int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos){
     int digitsTams = 0, ant_freq;
 
-    sscanf(buffer, "@%c@%d@", file_type, num_blocos);
-    buffer = buffer + 4 + countDigits(*num_blocos);
+    sscanf(buffer, "@%c@%d", file_type, num_blocos);
+    buffer += 3 + countDigits(*num_blocos);
 
     for (int nb = 1; nb <= *num_blocos; nb++){
         *info_blocos = malloc(sizeof(struct lligada));
 
         (*info_blocos)->nbloco = nb;
-        sscanf(buffer, "%d@", &((*info_blocos)->tamanho_bloco));
+        sscanf(buffer, "@%d@", &((*info_blocos)->tamanho_bloco));
         int aux = countDigits((*info_blocos)->tamanho_bloco);
         digitsTams += aux;
-        buffer = buffer + 1 + aux;
+        buffer += 2 + aux;
             
-        for (int i=0; i<=TAMANHO; i++) {
+        for (int i=0; i<=256; i++) { // n devia ser só < ???????????
             if(sscanf(buffer, "%d", &((*info_blocos)->arr[i].freq)) == 1){
                 ant_freq = (*info_blocos)->arr[i].freq;
                 (*info_blocos)->arr[i].symbl = i;
                 (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
-                buffer = buffer + 1 + countDigits(ant_freq);
+                buffer += 1 + countDigits(ant_freq);
             }else{
                 (*info_blocos)->arr[i].freq = ant_freq;
                 (*info_blocos)->arr[i].symbl = i;
                 (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
-                buffer = buffer + 1; //buffer += 1
+                buffer++;
             }
         }
         info_blocos = &((*info_blocos)->prox);
-        buffer = buffer + 1;
+        //buffer = buffer + 1;
     }
     (*info_blocos) = NULL;
     
@@ -199,7 +200,7 @@ void printTamBlocos(LInt *info_blocos) {
     }
 }
 
-void printData() { //mudar para printData
+void printData() { 
     struct tm *cache;     
     time_t now;
     time(&now);   
@@ -211,7 +212,7 @@ void printData() { //mudar para printData
 
 void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe) {
     printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\nMIEI -> Comunicação Dados ; ");
-    printData(); //1 ou 2
+    printData(); 
     printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
     printTamBlocos(&info_blocos);
     printf("bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);

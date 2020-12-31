@@ -6,19 +6,17 @@
 #include <time.h>
 #include <string.h>
 
-#define TAMANHO 256
-
 typedef struct info_symbl{
-    int symbl;
-    int freq;
-    int binary_code;
+    int symbl; //símbolo (ASCII)
+    int freq; //frequência do símbolo
+    int binary_code; //código binário do símbolo
 }InfSymbl;
 
 typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um ficheiro
     int nbloco; //número do bloco
     int tamanho_bloco; //tamano do bloco
-    InfSymbl arr[TAMANHO]; //frequência de cada símbolo
-    struct lligada *prox;
+    InfSymbl arr[TAMANHO]; //Array de struct com as 3 informações
+    struct lligada *prox; // próximo bloco
 }*LInt;
 
 //ver que funções ficam e que funções por aqui
