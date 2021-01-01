@@ -174,7 +174,7 @@ void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *fil
         }
         if((*info_blocos)->arr[255].freq != 0){
             sprintf(bufferFinal+indice,"%s", remove1digit((*info_blocos)->arr[255].binary_code));
-            indice += strlen(remove1digit((*info_blocos)->arr[255].binary_code)) + 1;
+            indice += strlen(remove1digit((*info_blocos)->arr[255].binary_code)); // tirar o + 1 ???
         }
         info_blocos = &((*info_blocos)->prox);   
     }
@@ -184,7 +184,7 @@ void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *fil
 void printTamBlocos(LInt *info_blocos){
     while(*info_blocos) {
         printf("%d", (*info_blocos)->tamanho_bloco);
-        printf("/");
+        if ((*info_blocos)->prox) printf("/");
         info_blocos = &((*info_blocos)->prox); 
     }
 }
@@ -195,7 +195,7 @@ void printData(){
     time(&now);   
     cache = localtime(&now);
  
-    printf("Data:%02d-%02d-%d ; Hora:%02d%02d%02d\n", cache->tm_mday, cache->tm_mon+1, cache->tm_year+1900, 
+    printf("Data:%02d-%02d-%d ; Hora: %02d:%02d:%02d\n", cache->tm_mday, cache->tm_mon+1, cache->tm_year+1900, 
                                                         cache->tm_hour, cache->tm_min, cache->tm_sec);
 }
 
@@ -258,7 +258,7 @@ int modulo_t(char *fileName){
     else printf("Tipo de ficheiro incorreto!");
 }
 
-int main(){
+/* int main(){
     modulo_t("bbb.zip.freq");
     return 1;
-}
+} */
