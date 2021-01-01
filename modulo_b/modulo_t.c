@@ -1,5 +1,16 @@
 #include "modulo_t.h"
 
+int correct_file (char s1[], char s2[]){
+    int i, j=0, ans=0;
+
+    for(i=0; s1[i]; i++);
+
+    for(i--,j; s2[j], s1[i]==s2[j]; i--,j++);
+
+    if(!s2[j]) ans = 1;
+
+    return ans;
+}
 
 void swap(InfSymbl *xp, InfSymbl *yp){ 
     InfSymbl temp = *xp;
@@ -19,14 +30,35 @@ void symblCres(InfSymbl arr[]){
             if (arr[j].symbl > arr[j+1].symbl) swap(&arr[j], &arr[j+1]);
 }
 
-/*
-int somaFreq (InfSymbl arr[], int n) {
-    int count = 0;
-    for (int i=0; i<n && arr[i].freq!=0 ; i++) { 
-        count += arr[i].freq;
-    }
-    return count;
-}*/
+void add0 (InfSymbl arr[], int i){
+    arr[i].binary_code *= 10;
+}
+
+void add1 (InfSymbl arr[], int i){
+    arr[i].binary_code = (arr[i].binary_code)*10 + 1;
+} 
+
+char *remove1digit (int val){
+    int i, aux=val;
+    for (i=0; aux>=1; i++) aux = aux / 10;
+    
+    char *pt = malloc(sizeof(char)*(i+1));
+    sprintf(pt, "%d", val);
+
+    for(int j=0; pt[j] != '\0';j++) pt[j]=pt[j+1];
+
+    char *reduct = malloc(sizeof(char)*i);
+    strcpy(reduct, pt);
+    free (pt);
+    return reduct;
+}
+
+int countDigits(int val){
+    if (val==0) return 1;
+    int i;
+    for (i=0; val>=1 ;i++) val /= 10;
+    return i;
+}
 
 int split (InfSymbl arr[], int inicio, int fim){
     int auxi = inicio, auxf = fim;
@@ -46,13 +78,14 @@ int split (InfSymbl arr[], int inicio, int fim){
     return auxi;
 }
 
-void add0 (InfSymbl arr[], int i){
-    arr[i].binary_code *= 10;
+int countBuffer(LInt *info_blocos){
+    int acc = 0;
+    
+    for (int i=0; (*info_blocos)->arr[i].freq != 0 && i<256; i++) {
+        acc += (countDigits((*info_blocos)->arr[i].binary_code))-1;
+    }
+    return acc;
 }
-
-void add1 (InfSymbl arr[], int i){
-    arr[i].binary_code = (arr[i].binary_code)*10 + 1;
-} 
 
 void atribuiBin (InfSymbl arr[], int inicio, int fim){
 
@@ -72,19 +105,7 @@ void atribuiBin (InfSymbl arr[], int inicio, int fim){
     }
 }
 
-int correct_file (char s1[], char s2[]){
-    int i, j=0, ans=0;
-
-    for(i=0; s1[i]; i++);
-
-    for(i--,j; s2[j], s1[i]==s2[j]; i--,j++);
-
-    if(!s2[j]) ans = 1;
-
-    return ans;
-}
-
-void converte (LInt *info_blocos, int *tamanhoBin) {
+void converte (LInt *info_blocos, int *tamanhoBin){
     while (*info_blocos) {
         freqDecres((*info_blocos)->arr);
         int fim;
@@ -97,37 +118,6 @@ void converte (LInt *info_blocos, int *tamanhoBin) {
 
         info_blocos = &((*info_blocos)->prox);
     }
-}
-
-int countBuffer(LInt *info_blocos){
-    int acc = 0;
-    
-    for (int i=0; (*info_blocos)->arr[i].freq != 0 && i<256; i++) {
-        acc += (countDigits((*info_blocos)->arr[i].binary_code))-1;
-    }
-    return acc;
-}
-
-char *remove1digit (int val) {
-    int i, aux=val;
-    for (i=0; aux>=1; i++) aux = aux / 10;
-    
-    char *pt = malloc(sizeof(char)*(i+1));
-    sprintf(pt, "%d", val);
-
-    for(int j=0; pt[j] != '\0';j++) pt[j]=pt[j+1];
-
-    char *reduct = malloc(sizeof(char)*i);
-    strcpy(reduct, pt);
-    free (pt);
-    return reduct;
-}
-
-int countDigits(int val) {
-    if (val==0) return 1;
-    int i;
-    for (i=0; val>=1 ;i++) val /= 10;
-    return i;
 }
 
 int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos){
@@ -145,7 +135,7 @@ int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_b
         digitsTams += aux;
         buffer += 1 + aux;
             
-        for (int i=0; i<256; i++) { // n devia ser só < ??????????? eu pensava q era isso mas n tinha a certeza, o zidane é que tinha feito 
+        for (int i=0; i<256; i++) {
             if(sscanf(buffer, "%d", &((*info_blocos)->arr[i].freq)) == 1){
                 ant_freq = (*info_blocos)->arr[i].freq;
                 (*info_blocos)->arr[i].symbl = i;
@@ -159,7 +149,6 @@ int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_b
             }
         }
         info_blocos = &((*info_blocos)->prox);
-        //buffer = buffer + 1;
     }
     (*info_blocos) = NULL;
     
@@ -192,7 +181,7 @@ void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *fil
     sprintf(bufferFinal+indice, "@0");
 }
 
-void printTamBlocos(LInt *info_blocos) {
+void printTamBlocos(LInt *info_blocos){
     while(*info_blocos) {
         printf("%d", (*info_blocos)->tamanho_bloco);
         printf("/");
@@ -200,7 +189,7 @@ void printTamBlocos(LInt *info_blocos) {
     }
 }
 
-void printData() { 
+void printData(){ 
     struct tm *cache;     
     time_t now;
     time(&now);   
@@ -210,7 +199,7 @@ void printData() {
                                                         cache->tm_hour, cache->tm_min, cache->tm_sec);
 }
 
-void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe) {
+void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe){
     printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\nMIEI -> Comunicação Dados ; ");
     printData(); 
     printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
@@ -219,7 +208,7 @@ void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe) {
     printf("Ficheiro gerado: %s\n", fixe);
 }
 
-int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para lá
+int modulo_t(char *fileName){
     clock_t tic = clock();
 
     if(correct_file(fileName, "qerf.")){
@@ -246,7 +235,6 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         int tamanhoBin = 0;
         converte (&info_blocos, &tamanhoBin);
 
-        //int tamFinal = 4 + countDigits(num_blocos) + digitsTams + 256*num_blocos + tamanhoBin + 4; 
         int tamFinal = 3 + countDigits(num_blocos) + 257*num_blocos + digitsTams + tamanhoBin + 2;
         char bufferFinal[tamFinal]; // + \0
         writeBuffer(&info_blocos, bufferFinal, num_blocos, file_type);
@@ -258,8 +246,7 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
         fclose(fopen(fixe,"w"));
         FILE *fpf = fopen (fixe, "w");
         
-        //fprintf(fpf, "%s", buffer);
-        fwrite(bufferFinal ,1 ,tamFinal+1 , fpf);
+        fwrite(bufferFinal ,1 ,tamFinal , fpf);
         fclose(fpf);
 
         clock_t toc = clock();
@@ -271,9 +258,7 @@ int modulo_t(char *fileName){ //trabalhar com o buffer passsar o primeiro para l
     else printf("Tipo de ficheiro incorreto!");
 }
 
-
 int main(){
-    modulo_t("aaa.txt.freq");
+    modulo_t("bbb.zip.freq");
     return 1;
 }
-

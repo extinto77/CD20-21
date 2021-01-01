@@ -21,29 +21,29 @@ typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um fich
 
 //ver que funções ficam e que funções por aqui
 
+int correct_file (char s1[], char s2[]);
+
 void swap(InfSymbl *xp, InfSymbl *yp);
 
 void freqDecres(InfSymbl arr[]);
 
 void symblCres(InfSymbl arr[]);
 
-int split (InfSymbl arr[], int inicio, int fim);
-
 void add0 (InfSymbl arr[], int i);
 
 void add1 (InfSymbl arr[], int i);
 
-void atribuiBin (InfSymbl arr[], int inicio, int fim);
-
-int correct_file (char s1[], char s2[]);
-
-void converte (LInt *info_blocos, int *medidas);
-
-int countBuffer(LInt *info_blocos);
-
 char *remove1digit (int val);
 
 int countDigits(int val);
+
+int split (InfSymbl arr[], int inicio, int fim);
+
+int countBuffer(LInt *info_blocos);
+
+void atribuiBin (InfSymbl arr[], int inicio, int fim);
+
+void converte (LInt *info_blocos, int *tamanhoBin);
 
 int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos);
 
