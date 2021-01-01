@@ -15,7 +15,7 @@ typedef struct info_symbl{
 typedef struct lligada { //Struct da Lista ligada de blocos que prefazem um ficheiro
     int nbloco; //número do bloco
     int tamanho_bloco; //tamano do bloco
-    InfSymbl arr[TAMANHO]; //Array de struct com as 3 informações
+    InfSymbl arr[256]; //Array de struct com as 3 informações
     struct lligada *prox; // próximo bloco
 }*LInt;
 

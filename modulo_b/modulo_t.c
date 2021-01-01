@@ -134,18 +134,18 @@ int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_b
     int digitsTams = 0, ant_freq;
 
     sscanf(buffer, "@%c@%d", file_type, num_blocos);
-    buffer += 3 + countDigits(*num_blocos);
+    buffer += 4 + countDigits(*num_blocos); // 4 e n 3 para passar já o @ seguinte
 
     for (int nb = 1; nb <= *num_blocos; nb++){
         *info_blocos = malloc(sizeof(struct lligada));
 
         (*info_blocos)->nbloco = nb;
-        sscanf(buffer, "@%d@", &((*info_blocos)->tamanho_bloco));
+        sscanf(buffer, "%d@", &((*info_blocos)->tamanho_bloco));
         int aux = countDigits((*info_blocos)->tamanho_bloco);
         digitsTams += aux;
-        buffer += 2 + aux;
+        buffer += 1 + aux;
             
-        for (int i=0; i<=256; i++) { // n devia ser só < ???????????
+        for (int i=0; i<256; i++) { // n devia ser só < ??????????? eu pensava q era isso mas n tinha a certeza, o zidane é que tinha feito 
             if(sscanf(buffer, "%d", &((*info_blocos)->arr[i].freq)) == 1){
                 ant_freq = (*info_blocos)->arr[i].freq;
                 (*info_blocos)->arr[i].symbl = i;
