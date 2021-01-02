@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
     char *arg1 = argv[2];
     char modulo = *argv[3];
     
-    if(argc>2 && strcmp(arg1, "-m") == 0){
+    if(strcmp(arg1, "-m") == 0){
         switch (modulo){
         case 'f':
             char tam = 'D';
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
         case 'd':
 
             break;
-            
+
         default:
             printf("Input errado!");
             break;
