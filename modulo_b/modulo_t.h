@@ -1,10 +1,10 @@
-#ifndef MODULO_T_AKA_B
-#define MODULO_T_AKA_B
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+
+#ifndef __MODULO_T__
+#define __MODULO_T__
 
 typedef struct info_symbl{
     int symbl; //símbolo (ASCII)
@@ -56,6 +56,5 @@ void printData();
 void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe);
 
 int modulo_t(char *fileName);
-
 
 #endif
