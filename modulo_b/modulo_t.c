@@ -5,7 +5,7 @@ int correct_file (char s1[], char s2[]){
 
     for(i=0; s1[i]; i++);
 
-    for(i--,j; s2[j], s1[i]==s2[j]; i--,j++);
+    for(i--, j; s2[j], s1[i]==s2[j]; i--,j++);
 
     if(!s2[j]) ans = 1;
 
@@ -66,14 +66,14 @@ int split (InfSymbl arr[], int inicio, int fim){
 
     if (inicio == fim) return (auxi=-1);
 
-    while(auxi <= (auxf-1)) {
+    while(auxi <= (auxf-1)){
         if (p2<p1){
-            p2 += arr[auxf].freq; 
+            p2 += arr[auxf].freq;
             auxf--;
         }else{
             p1 += arr[auxi].freq;
             auxi++;
-        } 
+        }
     }
     return auxi;
 }
@@ -88,15 +88,16 @@ int countBuffer(LInt *info_blocos){
 }
 
 void atribuiBin (InfSymbl arr[], int inicio, int fim){
+    if(inicio == fim || inicio > fim) return;
 
-    int separa = split (arr, inicio, fim);
-
-    if(separa<0) return;
-
-    if(fim == inicio+1){
+    if((inicio + 1) == fim){
         add0(arr, inicio);
         add1(arr, fim);
     }else{
+        int separa = split (arr, inicio, fim);
+
+        if(separa<0) return;
+
         for(int i=inicio; i<=separa;i++) add0(arr, i);
         for(int i=separa+1; i<=fim;i++) add1(arr, i);
 
@@ -121,7 +122,7 @@ void converte (LInt *info_blocos, int *tamanhoBin){
 }
 
 int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos){
-    int digitsTams = 0, ant_freq;
+    int digitsTams = 0, ant_freq = 0;
 
     sscanf(buffer, "@%c@%d", file_type, num_blocos);
     buffer += 4 + countDigits(*num_blocos); // 4 e n 3 para passar já o @ seguinte
@@ -204,7 +205,7 @@ void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe){
     printData(); 
     printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
     printTamBlocos(&info_blocos);
-    printf("bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
+    printf(" bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
     printf("Ficheiro gerado: %s\n", fixe);
 }
 
@@ -251,7 +252,7 @@ int modulo_t(char *fileName){
 
         clock_t toc = clock();
 
-        float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC );
+        float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC)*1000;
 
         printInfo(info_blocos, num_blocos, tempExec, fixe);
     }
