@@ -6,10 +6,11 @@
 #include <stdbool.h>
 
 
-#define BUF_SIZE 10240
+#define BUF_SIZE 1048576
 
 #define BUF_SIZE_COD 256
 
+FILE *fpoutput;
 
 int modo;
 
@@ -17,9 +18,20 @@ int n_blocks;
 
 int* block_size;
 
+int block_size_comp;
+
 char*** codigos;
 
 char* curr_dados;
+
+
+
+char* concat(const char *s1, const char *s2){
+    char *result = malloc(strlen(s1) + strlen(s2) + 1);
+    strcpy(result, s1);
+    strcat(result, s2);
+    return result;
+}
 
 
 FILE* fopenCntrl(char* filename, char* mode){
@@ -36,9 +48,7 @@ FILE* fopenCntrl(char* filename, char* mode){
 
 int initCOD(char* filecod, bool dbug){
     FILE* fp = fopenCntrl(filecod,"r");
-
     char m;
-    int n_blocks;
 
     char cod_buf[BUF_SIZE];
 
@@ -138,21 +148,27 @@ int initCOD(char* filecod, bool dbug){
 }
 
 //Tranforma um bytearray no byte(char) coorespondente; 
-char bytearr_to_byte(char* bytearr){
+char bytearr_to_byte(char* bytearr, bool debug){
     int res = 0;
+    int mult = 1;
+    if(debug) printf("\n\n\n\nBYTEARR: %s\n\n",bytearr);
     for(int i = 0; i < 8; i++){
-        res += ((int)(bytearr[i] - '0')) * (pow(2,(double) i));
+        res += mult * ((int)bytearr[7-i] - '0');
+        mult *= 2;
     }
+    if(debug)printf("res:%d\n\n\n\n\n",res );
     return (char) res;
 }
 
 
-char* block_compressed(int b, bool dbug){
+char* block_compressed(int b, bool dbug, int* block_size_comp_arr){
+
     int tambloco = block_size[b];
 
     int byteArrCurr = 0;
-    char* byteArr = (char*)malloc(8 * sizeof(char));
+    char* byteArr = (char*)malloc(9 * sizeof(char));
     
+    byteArr[8] = '\0';
     int ret_pos = 0;    
     char* ret = (char*)malloc(tambloco * sizeof(char));
 
@@ -169,113 +185,158 @@ char* block_compressed(int b, bool dbug){
 
 
     int exc_tam = 0;
-    int* excess = (int*)malloc(bloc_maior * sizeof(int));
-    printf("tambloco: %d",tambloco);
+    char* excess = (char*)malloc(bloc_maior * sizeof(char));
+    if(dbug)printf("tambloco: %d",tambloco);
     for(int i = 0; i < tambloco; i++){
-        char c = curr_dados[i];
+        unsigned char c = curr_dados[i];
         int sizeCodC = sizeCod[(int) c];
         char* codC = codigos[b][(int) c];
         int freeByteArr = 8 - byteArrCurr;
 
-        printf("\ni: %d\nc:%c\nsizeCodC: %d\ncodC: %s\nbyteArrCurr: %d\nfreeByteArr: %d\nbyteArr: %sexcesstam"
-            ,i,c,sizeCodC,codC,byteArrCurr,freeByteArr,byteArr);
+        if(dbug)printf("\n\ncurr_dados: %s\ncurrdados: %02hhx %02hhx %d\ni: %d\nc:%d\nsizeCodC: %d\ncodC: %s\nbyteArrCurr: %d\nfreeByteArr: %d\nbyteArr: %s\nexcesstam: %d\nexcess: %s\n\n"
+            ,curr_dados,(unsigned char) curr_dados[i],(unsigned char) curr_dados[i+1],curr_dados[i+1],i,c,sizeCodC,codC,byteArrCurr,freeByteArr,byteArr,exc_tam,excess);
 
         if(sizeCodC <= freeByteArr){
             for(int j = 0; j < sizeCodC; j++, byteArrCurr++){
                 byteArr[byteArrCurr] = codC[j];
             }
         }else{
-            for(int j = 0; j < freeByteArr; j++, byteArrCurr++){
+            for(int j = 0; j < freeByteArr; j++){
                 byteArr[byteArrCurr] = codC[j];
+                byteArrCurr++;
+                if(dbug)printf("(else) byteArr: %s\nbyteArrCurr: %d\n",byteArr,byteArrCurr);
             }
 
             exc_tam = sizeCodC - freeByteArr;
+           if(dbug) printf("(else) exc_tam: %d\n", exc_tam);
             for(int j = 0; j < exc_tam; j++){
                 excess[j] = codC[j + freeByteArr];
             }
+
+                if(dbug)printf("(else) excess: %s\n",excess);
         }
-        while(exc_tam != 0){
-            for(int j = 0; exc_tam >= 0 && byteArrCurr < 8; j++,exc_tam--,byteArrCurr++){
+        if(byteArrCurr == 8){
+            ret[ret_pos] = bytearr_to_byte(byteArr, dbug);
+            ret_pos++;
+            byteArrCurr = 0;
+            if(dbug)printf("byteArr: %s\nret: %c\nret_pos1: %d\n",byteArr,ret[ret_pos],ret_pos);
+        }
+        while(exc_tam > 0){
+            if(dbug)printf("bytearr_pre: %s\nbyteArrCurr_pre: %d\nexec_tam_pre: %d\n\n",byteArr,byteArrCurr,exc_tam);
+            for(int j = 0; exc_tam > 0 && byteArrCurr < 8; j++,exc_tam--,byteArrCurr++){
                 byteArr[byteArrCurr] = excess[j];
             }
-            if(exc_tam != 0 && byteArrCurr == 8){
-                ret[ret_pos] = bytearr_to_byte(byteArr);
+            
+
+            if(dbug)printf("bytearr_pos: %s\nbyteArrCurr_pos: %d\nexec_tam_pos: %d\n\n",byteArr,byteArrCurr,exc_tam);
+            if(exc_tam > 0 && byteArrCurr > 7){
+                ret[ret_pos] = bytearr_to_byte(byteArr,dbug);
                 ret_pos++;
                 byteArrCurr = 0;
             }
         }
         if(byteArrCurr == 8){
-            ret[ret_pos] = bytearr_to_byte(byteArr);
+            ret[ret_pos] = bytearr_to_byte(byteArr,dbug);
+            ret_pos++;
+            byteArrCurr = 0;
+
+            if(dbug)printf("ret2: %s\nret_pos2: %d\n",ret,ret_pos);
+        }
+        if(i+1 == tambloco && byteArrCurr > 0){
+            for(int j = byteArrCurr; j < 8; j++){
+                byteArr[j] = '0';
+            }
+            ret[ret_pos] = bytearr_to_byte(byteArr,dbug);
             ret_pos++;
             byteArrCurr = 0;
         }
     }
-    free(byteArr);
+
+    ret[ret_pos+1]='\0';
+    block_size_comp = ret_pos++;
+    int aux = block_size_comp;
+    block_size_comp_arr[b] = aux;
+    if(dbug)printf("block_size_comp[%d]: %d\n",b,block_size_comp);
     return ret;
 }
 
 
 
 
-
-/*
-int povoaCods(char* filename){
-	codigos = (char **)malloc(256 * sizeof(char *));
-    int tam = 0;
-
-	for(int i = 0; i < 256; i++){
-		//Code
-        
-
-		codigos[i] = (char *)malloc(tam * sizeof(char));
-	}
-}*/
+void put_out_file(int tam, char* bloco_comp){
+    fprintf(fpoutput, "@%d@",tam);
+    for(int i = 0; i < tam; i++){
+        fputc(bloco_comp[i],fpoutput);
+    }
+}
 
 
-
-
-
-void print_char_file(char* s){
+void printData(float t,char* f_in, char* f_out,int* block_size_comp_arr){
+    int tamanho_tot_in = 0;
+    int tamanho_tot_out = 0;
     
-    char *file = "teste.txt";
+    
+    printf("Módulo: c (codificação dum ficheiro de símbolos)\n");
+    printf("Ficheiro input: %s\n", f_in);
+    printf("Número de blocos: %d\n",n_blocks);
 
-    FILE *fp = fopenCntrl(file,"w+");
+    for(int i = 0; i < n_blocks; i++){
+        int tam_in = block_size[i];
+        int tam_out = block_size_comp_arr[i];
+        tamanho_tot_in += tam_in;
+        tamanho_tot_out += tam_out;
 
-    fputs(s,fp);
-    fclose(fp);
+        printf("Tamanho original do bloco %d: %d \n",i+1,tam_in);
+        printf("Tamanho comprimido do bloco %d (Taxa de Compressão): %d (%f%%)\n",i+1,tam_out,(100-(((float)tam_out/tam_in)*100)));
+    }
+
+    
+
+
+
+    printf("Tamanho original do ficheiro : %d\n",tamanho_tot_in);
+    printf("Tamanho ficheiro comprimido (Taxa de Compressão) %d (%f%%)\n",tamanho_tot_out,(100-(((float)tamanho_tot_out/tamanho_tot_in)*100)));
+    printf("Tempo de execução: %fs\n",t);
+    printf("Ficheiro gerado: %s\n",f_out);
 }
 
 
 
+int modulo_c(char* fileinput){
+    bool debug = false;
+
+    clock_t tic = clock();
+
+    FILE *fpdata = fopenCntrl(fileinput,"r");
 
 
-
-
-int main(){
-   /* char bytearr[8];
-
-    bytearr[0] = '0';  //1
-    bytearr[1] = '1';  //2
-    bytearr[2] = '0';  //4
-    bytearr[3] = '0';  //8
-    bytearr[4] = '0';  //16
-    bytearr[5] = '0';  //32
-    bytearr[6] = '1';  //64
-    bytearr[7] = '0';  //128
-
-    char c = bytearr_to_byte(bytearr);
-    print_char_file(c);
-
-
-    printf("%c\n", c);*/
-
-    curr_dados = "abcbdbcbabdbcbdbcbabacdbacdaabcbddaaaabbcbcaaaaaaabcbcbdacabbaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbccccccccccddddddbcbdbabdbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbccccddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbcccccccdbabaaababaacacdaddcababababababababbababababababababbababcdcdcdcdbababdccdbacddcbacdbacdbccdbabbabbdbbdbabbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbdbcbdcdbcdbcbdbbcbabcbdbcbabdbcbdbcbabacdbacdaabcbddaaaabbcbcaaaaaaabcbcbdacabbaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbccccccccccddddddbcbdbabdbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbccccddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbcccccccdbabaaababaacacdaddcababababababababbababababababababbababcdcdcdcdbababdccdbacddcbacdbacdbccdbabbabbdbbdbabbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbdbcbdcdbcdbcbdbbcbcabcbdbcbabdbcbdbcbabacdbacdaabcbddaaaabbcbcaaaaaaabcbcbdacabbaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbccccccccccddddddbcbdbabdbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbccccddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbcccccccdbbaaababaacacdddcababababababababbababababababababbababcdcdcdcdbababdccdbacddcbacdbacdbccdbabbabbdbbdbabbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbdbcbdcdbcdbcbdbbcbcabcbdbcbabdbcbdbcbabacdbacdaabcbddaaaabbcbcaaaaaaabcbcbdacabbaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbccccccccccddddddbcbdbabdbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbccccddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbcccccccdbabaaababaacacdaddcababababababababbababababababababbababcdcdcdcdbababdccdbacddcbacdbacdbccdbabbabbdbbdbabbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbdbcbdcdbcdbcbdbbcbabcbdbcbabdbcbdbcbabacdbacdaabcbddaaaabbcbcaaaaaaa";
+    char* fileoutput = concat(fileinput,".shaf");
+    fpoutput = fopenCntrl(fileoutput,"w+");
     
-    char* filecod = "teste.txt.cod";
-    initCOD(filecod, true);
-    char* ret = block_compressed(0, true);
-    FILE *fp = fopenCntrl("output_teste.txt","r+");
-    fputs(ret,fp);
+
+    char* filecod = concat(fileinput,".cod");
+
+    initCOD(filecod, debug);
+     
+    fprintf(fpoutput, "@%d", n_blocks);
+
+
+    int* block_size_comp_arr = (int*)malloc(n_blocks * sizeof(int));
+
+    for(int i = 0; i < n_blocks; i++){
+        curr_dados = (char *)malloc((block_size[i]+1)*sizeof(char));
+        fread(curr_dados,1,block_size[i]+1,fpdata);
+        char *bloco_comp = block_compressed(i,debug, block_size_comp_arr);
+        put_out_file(block_size_comp,bloco_comp);
+    }
+
+    fclose(fpoutput);
+
+    clock_t toc = clock();
+
+    float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC);
+    printData(tempExec,fileinput,fileoutput,block_size_comp_arr);
+
 
 	return 0;
 }
