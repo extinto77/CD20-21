@@ -1,5 +1,19 @@
 #include "modulo_t.h"
 
+/*      CD 20/21 
+    MODULO B
+        Os autores deste modulo foram José Luis Alves Fernandes a93200 e Pedro Miguel Marques Ferreira a93303.
+        ->Este ficheiro contem todas as funções utilizadas para a execução do modulo B, a criação dos códigos Shannon Fano, para tal utlizamos as funções 
+        como a modulo_t, a makeAtribution, a converte e a writeBuffer.
+        ->A modulo_t é a função principal, recebe como input o nome do ficheiro e começa por saber o tamanho do mesmo, de seguida cria um buffer desse tamanho, onde será
+        guardada toda a informação do ficheiro, de seguida vai para a makeAtribution, que utliza esse buffer e organiza a informação em blocos, utilizando a struct lligada
+        e a Info_Symbl e que retorna o tamanho dos digitos do tamanho de cada bloco em que o ficheiro foi dividido, para posterior utilização.
+        ->A Converte ordena as frequências de forma decrescente e de seguida cria os códigos  Shannon Fano, aproveita também para calcular a soma do número de bits de 
+        cada código binário. No fim volta a organizar tudo como estava de inicio.
+        ->A writeBuffer cria o buffer final, que será utilizado para escrever no ficheiro de output, segundo as regras do tipo de ficheiro cod.
+*/
+
+// Avalia se o ficheiro input é válido
 int correct_file (char s1[], char s2[]){
     int i, j=0, ans=0;
 
@@ -12,32 +26,53 @@ int correct_file (char s1[], char s2[]){
     return ans;
 }
 
+// Atuliza a extensão do ficheiro para .cod
+char *codFile(char fileName[]){
+    int i=0;
+    char *cod = {"cod"};
+    for(i; fileName[i]; i++);
+    
+    int j;
+
+    for(i=i-4, j=0; fileName[i]; i++, j++){
+        fileName[i] = cod[j];
+    }
+
+    return fileName;
+}
+
+// Troca a ordem de dois elementos no array
 void swap(InfSymbl *xp, InfSymbl *yp){ 
     InfSymbl temp = *xp;
     *xp = *yp;
     *yp = temp;
 }
 
+//Ordena as frequências por ordem decrescente
 void freqDecres(InfSymbl arr[]){
     for (int i = 0; i < 255; i++)
         for (int j = 0; j < 255-i; j++)
             if (arr[j].freq < arr[j+1].freq) swap(&arr[j], &arr[j+1]);
 }
 
+//Ordena os símbolos por ordem crescente
 void symblCres(InfSymbl arr[]){
     for (int i = 0; i < 255; i++)
         for (int j = 0; j < 255-i; j++)
             if (arr[j].symbl > arr[j+1].symbl) swap(&arr[j], &arr[j+1]);
 }
 
+//Adiciona um 0 ao códifo Shannon Fano
 void add0 (InfSymbl arr[], int i){
-    arr[i].binary_code *= 10;
+    arr[i].Shannon_Fano *= 10;
 }
 
+//Adiciona um 1 ao códifo binário
 void add1 (InfSymbl arr[], int i){
-    arr[i].binary_code = (arr[i].binary_code)*10 + 1;
-} 
+    arr[i].Shannon_Fano = (arr[i].Shannon_Fano)*10 + 1;
+}
 
+// Remove o primeiro digito 1 do código Shannon Fano
 char *remove1digit (int val){
     int i, aux=val;
     for (i=0; aux>=1; i++) aux = aux / 10;
@@ -53,6 +88,7 @@ char *remove1digit (int val){
     return reduct;
 }
 
+//Conta os dígitos de determinao valor
 int countDigits(int val){
     if (val==0) return 1;
     int i;
@@ -60,6 +96,7 @@ int countDigits(int val){
     return i;
 }
 
+//Determina o índice da melhor divisão tal que a soma das probabilidades dos dois subconjuntos seja o mais próxima da metade do conjunto 
 int split (InfSymbl arr[], int inicio, int fim){
     int auxi = inicio, auxf = fim;
     int p1 = arr[auxi].freq, p2 = arr[auxf].freq;
@@ -78,15 +115,17 @@ int split (InfSymbl arr[], int inicio, int fim){
     return auxi;
 }
 
+//Calcula a soma do número de digitos dos códigos Shannon Fano
 int countBuffer(LInt *info_blocos){
     int acc = 0;
     
     for (int i=0; (*info_blocos)->arr[i].freq != 0 && i<256; i++) {
-        acc += (countDigits((*info_blocos)->arr[i].binary_code))-1;
+        acc += (countDigits((*info_blocos)->arr[i].Shannon_Fano))-1;
     }
     return acc;
 }
 
+// Cria os códigos Shannon Fano de cada símbolo
 void atribuiBin (InfSymbl arr[], int inicio, int fim){
     if(inicio == fim || inicio > fim) return;
 
@@ -106,6 +145,7 @@ void atribuiBin (InfSymbl arr[], int inicio, int fim){
     }
 }
 
+// Organiza a informação para criação dos códigos Shannon Fano
 void converte (LInt *info_blocos, int *tamanhoBin){
     while (*info_blocos) {
         freqDecres((*info_blocos)->arr);
@@ -121,6 +161,7 @@ void converte (LInt *info_blocos, int *tamanhoBin){
     }
 }
 
+// Organiza a informação do buffer listas ligadas e Info_Symbl
 int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_blocos){
     int digitsTams = 0, ant_freq = 0;
 
@@ -140,12 +181,12 @@ int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_b
             if(sscanf(buffer, "%d", &((*info_blocos)->arr[i].freq)) == 1){
                 ant_freq = (*info_blocos)->arr[i].freq;
                 (*info_blocos)->arr[i].symbl = i;
-                (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
+                (*info_blocos)->arr[i].Shannon_Fano = 1; //inicializat todos a 1
                 buffer += 1 + countDigits(ant_freq);
             }else{
                 (*info_blocos)->arr[i].freq = ant_freq;
                 (*info_blocos)->arr[i].symbl = i;
-                (*info_blocos)->arr[i].binary_code = 1; //inicializat todos a 1
+                (*info_blocos)->arr[i].Shannon_Fano = 1; //inicializat todos a 1
                 buffer++;
             }
         }
@@ -157,6 +198,7 @@ int makeAtribution (char *buffer, LInt *info_blocos, char *file_type, int *num_b
     return digitsTams;
 }
 
+// Cria o buffer final para o ficheiro output
 void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *file_type){
     int indice = 0;
     sprintf (bufferFinal, "@%c@%d",file_type[0], num_blocos );
@@ -169,19 +211,20 @@ void writeBuffer(LInt *info_blocos, char *bufferFinal, int num_blocos, char *fil
                 sprintf(bufferFinal+indice,";");
                 indice++;
             }else{
-                sprintf(bufferFinal+indice,"%s;", remove1digit((*info_blocos)->arr[i].binary_code));
-                indice += strlen(remove1digit((*info_blocos)->arr[i].binary_code)) + 1;
+                sprintf(bufferFinal+indice,"%s;", remove1digit((*info_blocos)->arr[i].Shannon_Fano));
+                indice += strlen(remove1digit((*info_blocos)->arr[i].Shannon_Fano)) + 1;
             }
         }
         if((*info_blocos)->arr[255].freq != 0){
-            sprintf(bufferFinal+indice,"%s", remove1digit((*info_blocos)->arr[255].binary_code));
-            indice += strlen(remove1digit((*info_blocos)->arr[255].binary_code)); // tirar o + 1 ???
+            sprintf(bufferFinal+indice,"%s", remove1digit((*info_blocos)->arr[255].Shannon_Fano));
+            indice += strlen(remove1digit((*info_blocos)->arr[255].Shannon_Fano)); // tirar o + 1 ???
         }
         info_blocos = &((*info_blocos)->prox);   
     }
     sprintf(bufferFinal+indice, "@0");
 }
 
+// Faz print dos tamanhos dos blocos
 void printTamBlocos(LInt *info_blocos){
     while(*info_blocos) {
         printf("%d", (*info_blocos)->tamanho_bloco);
@@ -190,6 +233,7 @@ void printTamBlocos(LInt *info_blocos){
     }
 }
 
+// Faz print da Hora e Data
 void printData(){ 
     struct tm *cache;     
     time_t now;
@@ -200,15 +244,16 @@ void printData(){
                                                         cache->tm_hour, cache->tm_min, cache->tm_sec);
 }
 
-void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fixe){
+// Faz print da informação essencial do modulo 
+void printInfo(LInt info_blocos ,int num_blocos, float tempExec, char *fileOutput){
     printf("Autores: Pedro Miguel Marques Ferreira -> a93303 ; José Luís Alves Fernades -> a93200\nMIEI -> Comunicação Dados ; ");
     printData(); 
     printf("Módulo: t (cálculo dos códigos dos símbolos)\nNúmero de Blocos: %d\nTamanho dos blocos analisados no ficheiro de símbolos: ", num_blocos);
     printTamBlocos(&info_blocos);
-    printf(" bytes\nTempo de execução do módulo (milissegundos): %f\n", tempExec);
-    printf("Ficheiro gerado: %s\n", fixe);
+    printf(" bytes\nTempo de execução do módulo (milissegundos): %f\nFicheiro gerado: %s\n\n", tempExec, fileOutput);
 }
 
+// Função principal do modulo
 int modulo_t(char *fileName){
     clock_t tic = clock();
 
@@ -216,7 +261,7 @@ int modulo_t(char *fileName){
         FILE *fp = fopen(fileName, "r");
 
         if(fp == NULL){
-            printf("Não foi possível ler o ficheiro!");
+            printf("--> Não foi possível ler o ficheiro! <--");
             return 0;
         }
 
@@ -237,29 +282,22 @@ int modulo_t(char *fileName){
         converte (&info_blocos, &tamanhoBin);
 
         int tamFinal = 3 + countDigits(num_blocos) + 257*num_blocos + digitsTams + tamanhoBin + 2;
-        char bufferFinal[tamFinal]; // + \0
+        char bufferFinal[tamFinal + 1];
         writeBuffer(&info_blocos, bufferFinal, num_blocos, file_type);
-
-        char *fixe = malloc(sizeof(char)*(strlen(fileName)+5));
-        strcpy(fixe,fileName);
-        strcat(fixe, ".cod");
-
-        fclose(fopen(fixe,"w"));
-        FILE *fpf = fopen (fixe, "w");
         
-        fwrite(bufferFinal ,1 ,tamFinal , fpf);
+        char *fileOutput = codFile(fileName);
+
+        fclose(fopen(fileOutput,"w"));
+        FILE *fpf = fopen (fileOutput, "w");
+        
+        fwrite(bufferFinal , 1, tamFinal, fpf);
         fclose(fpf);
 
         clock_t toc = clock();
 
         float tempExec = ((double)(toc-tic) / CLOCKS_PER_SEC)*1000;
 
-        printInfo(info_blocos, num_blocos, tempExec, fixe);
+        printInfo(info_blocos, num_blocos, tempExec, fileOutput);
     }
-    else printf("Tipo de ficheiro incorreto!");
+    else printf("--> Tipo de ficheiro incorreto! <--");
 }
-
-/* int main(){
-    modulo_t("bbb.zip.freq");
-    return 1;
-} */

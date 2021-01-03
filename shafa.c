@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "modulo_b/modulo_t.h"
+#include "modulo_t.h"
 /* 
 #include "modulo_a/modulo_.h"
 #include "modulo_c/modulo_.h"
@@ -22,7 +22,6 @@ int main(int argc, char *argv[]){
         switch (modulo){
         case 'f':
             char tam = 'D';
-
             if (argc>6) {
                 tam = argv[5];
                 if ( strcmp(argv[6],"-c") && strcmp(argv[7],"r") ) moduloA(filename, 1, tam);
@@ -36,19 +35,13 @@ int main(int argc, char *argv[]){
                 if ( strcmp(argv[4],"-c") && strcmp(argv[5],"r") ) moduloA(filename, 1, tam);
             }
             break;
-
         case 't':
             modulo_t(filename);
             break;
-
         case 'c':
-
             break;
-
         case 'd':
-
             break;
-
         default:
             printf("Input errado!");
             break;
