@@ -1,18 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "modulo_b/modulo_t.h"
-#include "modulo_a/modulo_a.h"
-/* 
-#include "modulo_a/modulo_.h"
-#include "modulo_c/modulo_.h"
-#include "modulo_d/modulo_.h"
- */
+#include "modulo_t.h"
+#include "modulo_a.h"
 
-/* 
-shafa filename -m t -b x -c r
-  0       1     2 3  4 5  6 7
-*/
 
 int main(int argc, char *argv[]){
     char *filename = argv[1];
