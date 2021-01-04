@@ -51,20 +51,12 @@ int main(int argc, char *argv[]){
     if(strcmp(arg1, "-m") == 0){
         switch (modulo){
         case 'f':
-            char tam = 'D';
-            if (argc>6) {
-                tam = argv[5];
-                if ( strcmp(argv[6],"-c") && strcmp(argv[7],"r") ) moduloA(filename, 1, tam);
-                else moduloA(filename, 0, tam);
-            }
-            if (argc>4){
-                if ( strcmp(argv[4],"-b") ){
-                    tam = argv[5];
-                    moduloA(filename, 0, tam);
-                }
-                if ( strcmp(argv[4],"-c") && strcmp(argv[5],"r") ) moduloA(filename, 1, tam);
-            }
+            
+            moduloA(filename, forceRLE, tamanhoBloco);
+      
             break;
+            
+            
         case 't':
             modulo_t(filename);
             break;
